@@ -1,0 +1,53 @@
+{
+    "questions": [
+      {
+        "id": 1,
+        "title": "Long-term goals",
+        "questionText": "What were some long-term personal goals, outside of work, that took you months or years to achieve?",
+        "instructions": "",
+        "timeLimit": 120
+      },
+      {
+        "id": 2,
+        "title": "Habits",
+        "questionText": "What habits or routines do you follow consistently, and how do you maintain them even when you're not feeling motivated?",
+        "instructions": "",
+        "timeLimit": 120
+      },
+      {
+        "id": 3,
+        "title": "Scenario",
+        "questionText": "A small coastal town experiences a sudden increase in jellyfish sightings near its popular beaches. Local marine biologists report no significant changes in water temperature or acidity. The town recently upgraded its sewage treatment plant and banned certain sunscreens to protect coral reefs. Tourism has increased by 10% compared to last year, with more visitors from neighboring countries. A new fishing regulation limits catches of certain species. Curiously, sales of ice cream and bottled water have spiked, while sales of inflatable pool toys have decreased. The town's annual sandcastle competition was canceled due to lack of funding.",
+        "instructions": "What do you think is the most likely reason for the increase in jellyfish sightings? Think out loud and explain your reasoning",
+        "timeLimit": 300
+      },
+      {
+        "id": 4,
+        "title": "Scenario",
+        "questionText": "A small island community of 500 people is facing a crisis. Their only school, which serves all age groups, has been severely damaged by a storm. With limited resources and no immediate help from the mainland, the islanders must find a way to continue education for their children. The island has abundant natural resources but lacks modern technology. The community values education highly but also needs to maintain essential services like fishing and farming. How can they ensure continuous learning for all students while dealing with their limited resources and isolation?",
+        "instructions": "How would you solve this problem? Think out loud.",
+        "timeLimit": 300
+      },
+      {
+        "id": 5,
+        "title": "Scenario",
+        "questionText": "You're a software developer with 4 hours left in your workday. You have these tasks: 1 - Fix a critical bug in the production system - 2 Complete code review for a colleague's pull request - 3 Finish writing unit tests for a new feature 4. Attend a 30-minute team standup (starts in 1 hour)",
+        "instructions": "Estimate the time for each task and create a prioritized schedule.",
+        "timeLimit": 300
+      },
+      {
+        "id": 6,
+        "title": "Concept",
+        "questionText": "Parkinson's Law is the idea that 'work expands to fill the time available for its completion.' This means that if you give yourself a week to complete a two-hour task, the task will take up the whole week because you'll stretch it out or procrastinate. On the other hand, if you give yourself a tighter deadline, you're more likely to complete the task efficiently. The idea encourages setting shorter deadlines to increase productivity and avoid wasting time.",
+        "instructions": "We will explain you a concept and then ask you questions about it.",
+        "timeLimit": 60
+      },
+      {
+        "id": 6,
+        "title": "Concept",
+        "questionText": "",
+        "instructions": "Can you summarize Parkinson's Law in your own words?",
+        "timeLimit": 120
+      }
+    ]
+  }
