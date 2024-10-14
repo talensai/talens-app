@@ -79,7 +79,7 @@ export function QuizInterfaceComponent() {
       {isLastQuestion && (
         <div className="mt-5 flex justify-center">
           <Link href="/">
-            <Button size="lg">Finish Quiz</Button>
+            <Button className="text-lg py-2 px-4">Finish Quiz</Button>
           </Link>
         </div>
       )}

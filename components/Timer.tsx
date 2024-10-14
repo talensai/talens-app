@@ -16,7 +16,7 @@ export function Timer({ initialTime, key }: TimerProps) {
   }, [initialTime])
 
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: number
     if (isRunning && time > 0) {
       interval = setInterval(() => {
         setTime((prevTime) => prevTime - 1)
