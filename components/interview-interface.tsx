@@ -15,7 +15,7 @@ interface QuizQuestion {
   timeLimit: number
 }
 
-export function QuizInterfaceComponent() {
+export function InterviewInterfaceComponent() {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 
