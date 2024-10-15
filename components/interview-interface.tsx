@@ -6,6 +6,7 @@ import { QuestionDisplay } from "@/components/QuestionDisplay"
 import { Navigation } from "@/components/Navigation"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
+import { AudioRecorder } from "@/components/AudioRecorder"
 
 interface QuizQuestion {
   id: number
@@ -54,7 +55,7 @@ export function InterviewInterfaceComponent() {
         </div>
         <Timer 
           initialTime={currentQuestion.timeLimit} 
-          key={currentQuestion.id} // Add this line
+          key={currentQuestion.id}
         />
       </header>
       <main className="flex-grow flex flex-col justify-center items-center space-y-5">
@@ -69,6 +70,7 @@ export function InterviewInterfaceComponent() {
             <p className="text-gray-700">{currentQuestion.instructions}</p>
           </div>
         )}
+        <AudioRecorder />
       </main>
       <Navigation 
         currentQuestion={currentQuestionIndex + 1}
