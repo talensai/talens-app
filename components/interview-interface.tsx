@@ -70,7 +70,7 @@ export function InterviewInterfaceComponent() {
             <p className="text-gray-700">{currentQuestion.instructions}</p>
           </div>
         )}
-        <AudioRecorder />
+        <AudioRecorder questionId={currentQuestion.id} />
       </main>
       <Navigation 
         currentQuestion={currentQuestionIndex + 1}
@@ -79,9 +79,12 @@ export function InterviewInterfaceComponent() {
         onNext={handleNextQuestion}
       />
       {isLastQuestion && (
-        <div className="mt-5 flex justify-center">
+        <div className="mt-5 flex justify-center space-x-4">
           <Link href="/">
             <Button className="text-lg py-2 px-4">Finish Quiz</Button>
+          </Link>
+          <Link href="/summary">
+            <Button className="text-lg py-2 px-4">View Summary</Button>
           </Link>
         </div>
       )}

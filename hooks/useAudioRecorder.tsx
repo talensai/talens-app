@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false)
@@ -7,7 +7,10 @@ export function useAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
+  console.log('useAudioRecorder hook called');
+
   const startRecording = useCallback(async () => {
+    console.log('Starting recording');
     try {
       // Clear previous recording data
       setAudioURL(null)
@@ -54,17 +57,28 @@ export function useAudioRecorder() {
       }
       mediaRecorderRef.current.start()
       setIsRecording(true)
+      console.log('Recording started successfully');
     } catch (error) {
-      console.error('Error accessing microphone:', error)
+      console.error('Error accessing microphone:', error);
+      console.error('Error starting recording:', error);
     }
   }, [])
 
   const stopRecording = useCallback(() => {
+    console.log('Stopping recording');
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
+      console.log('Recording stopped successfully');
+    } else {
+      console.log('No active recording to stop');
     }
   }, [isRecording])
+
+  // Add this useEffect to log state changes
+  useEffect(() => {
+    console.log('Audio state updated:', { isRecording, audioURL, transcription });
+  }, [isRecording, audioURL, transcription]);
 
   return {
     isRecording,
