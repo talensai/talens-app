@@ -1,31 +1,28 @@
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 
 interface TimerProps {
   initialTime: number
-  key: number // Add this line
+  key: number
 }
 
 export function Timer({ initialTime, key }: TimerProps) {
   const [time, setTime] = useState(initialTime)
-  const [isRunning, setIsRunning] = useState(false)
 
   useEffect(() => {
     setTime(initialTime) // Reset the timer when initialTime changes
-    setIsRunning(false)
-  }, [initialTime])
+    const interval = setInterval(() => {
+      setTime((prevTime) => {
+        if (prevTime > 0) {
+          return prevTime - 1
+        } else {
+          clearInterval(interval)
+          return 0
+        }
+      })
+    }, 1000)
 
-  useEffect(() => {
-    let interval: number
-    if (isRunning && time > 0) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime - 1)
-      }, 1000)
-    } else if (time === 0) {
-      setIsRunning(false)
-    }
     return () => clearInterval(interval)
-  }, [isRunning, time])
+  }, [initialTime])
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
@@ -33,22 +30,11 @@ export function Timer({ initialTime, key }: TimerProps) {
     return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
   }
 
-  const handleStartStop = () => {
-    setIsRunning(!isRunning)
-  }
-
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center">
       <div className="font-mono text-xl" aria-live="polite" aria-label="Timer">
         {formatTime(time)}
       </div>
-      <Button
-        onClick={handleStartStop}
-        aria-label={isRunning ? "Stop timer" : "Start timer"}
-        className={isRunning ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}
-      >
-        {isRunning ? "Stop" : "Start"}
-      </Button>
     </div>
   )
 }
