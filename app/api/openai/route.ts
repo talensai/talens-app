@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import OpenAI from "openai"
-import petNamePrompt from '../../prompts/petName'
+import evaluateResponsePrompt from '../../prompts/evaluateResponse'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -37,16 +37,16 @@ async function generateResponse(promptData) {
 
 export async function POST(request: Request) {
   try {
-    const { pet_info } = await request.json()
+    const { question, response } = await request.json()
 
-    if (!pet_info) {
+    if (!question || !response) {
       return NextResponse.json({ error: 'Invalid input data provided' }, { status: 400 })
     }
 
-    const promptData = petNamePrompt({ pet_info })
-    const response = await generateResponse(promptData)
+    const promptData = evaluateResponsePrompt({ question, response })
+    const evaluation = await generateResponse(promptData)
 
-    return NextResponse.json({ response })
+    return NextResponse.json({ evaluation })
   } catch (error) {
     console.error('Error processing request:', error)
     return NextResponse.json({ error: 'Error processing your request' }, { status: 500 })
