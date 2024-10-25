@@ -60,7 +60,11 @@ export default function SummaryPage() {
   useEffect(() => {
     fetch('/quizData.json')
       .then(response => response.json())
-      .then(data => setQuestions(data.questions))
+      .then(data => {
+        // Sort questions by ID to ensure consistent order
+        const sortedQuestions = [...data.questions].sort((a, b) => a.id - b.id)
+        setQuestions(sortedQuestions)
+      })
       .catch(error => console.error('Error fetching quiz data:', error))
   }, [])
 
@@ -88,22 +92,49 @@ export default function SummaryPage() {
     }
   }
 
+  // Sort answers to match question order
+  const sortedAnswers = [...answers].sort((a, b) => a.questionId - b.questionId)
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold mb-8">Interview Summary</h1>
         
-        {questions.map(question => {
-          const answer = answers.find(a => a.questionId === question.id)
+        {questions.map((question, index) => {
+          const answer = sortedAnswers.find(a => a.questionId === question.id)
           const evaluation = evaluations[question.id]
           const isLoading = loadingStates[question.id]
 
           return (
             <Card key={question.id} className="bg-card">
               <CardHeader>
-                <CardTitle>Question {question.id}: {question.title}</CardTitle>
+                <CardTitle>Question {index + 1}: {question.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Question Display */}
+                <div className="bg-muted/50 p-4 rounded-md">
+                  <h3 className="font-semibold mb-2">Question:</h3>
+                  <p className="text-muted-foreground">{question.questionText}</p>
+                  {question.instructions && (
+                    <div className="mt-2">
+                      <h4 className="font-medium">Instructions:</h4>
+                      <p className="text-muted-foreground">{question.instructions}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Audio Recording */}
+                {answer?.audioUrl && (
+                  <div className="bg-muted p-4 rounded-md">
+                    <h3 className="font-semibold mb-2">Your Recording:</h3>
+                    <audio controls className="w-full">
+                      <source src={answer.audioUrl} type="audio/webm" />
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                )}
+
+                {/* Response Transcription */}
                 <div className="bg-muted p-4 rounded-md">
                   <h3 className="font-semibold mb-2">Your Response:</h3>
                   <p className="text-muted-foreground">
