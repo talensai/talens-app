@@ -1,18 +1,24 @@
 import { useState } from 'react';
 
+interface CriteriaScore {
+  criterion_name: string;
+  score: number;
+  justification: string;
+}
+
 interface EvaluationResult {
   overall_assessment: string;
-  score: number;
-  strengths: string[];
-  areas_for_improvement: string[];
-  soft_skills_demonstrated: string[];
+  criteria_scores: CriteriaScore[];
+  key_observations: string[];
+  improvement_suggestions: string[];
+  total_score: number;
 }
 
 export function useEvaluation() {
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const evaluateResponse = async (question: string, response: string) => {
+  const evaluateResponse = async (question: QuizQuestion, response: string) => {
     setIsLoading(true);
     try {
       const res = await fetch('/api/openai', {
@@ -24,11 +30,11 @@ export function useEvaluation() {
       });
       const data = await res.json();
       setEvaluation(data.evaluation);
-      return data.evaluation; // Return the evaluation result
+      return data.evaluation;
     } catch (error) {
       console.error('Error:', error);
       setEvaluation(null);
-      return null; // Return null in case of error
+      return null;
     } finally {
       setIsLoading(false);
     }

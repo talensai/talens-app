@@ -3,9 +3,19 @@
 import { useAnswers } from "@/contexts/AnswersContext"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { QuestionDisplay } from "@/components/QuestionDisplay"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useState, useEffect } from "react"
 import { useEvaluation } from "@/hooks/useEvaluation"
+
+interface RubricPoint {
+  score: number;
+  description: string;
+}
+
+interface RubricCriterion {
+  name: string;
+  points: RubricPoint[];
+}
 
 interface QuizQuestion {
   id: number
@@ -13,6 +23,9 @@ interface QuizQuestion {
   questionText: string
   instructions: string
   timeLimit: number
+  rubric: {
+    criteria: RubricCriterion[];
+  };
 }
 
 interface Answer {
@@ -21,10 +34,26 @@ interface Answer {
   transcription: string
 }
 
+interface EvaluationResult {
+  overall_assessment: string
+  score: number
+  strengths: string[]
+  areas_for_improvement: string[]
+  soft_skills_demonstrated: string[]
+  criteria_scores: {
+    criterion_name: string
+    score: number
+    justification: string
+  }[]
+  key_observations: string[]
+  improvement_suggestions: string[]
+  total_score: number
+}
+
 export default function SummaryPage() {
   const { answers } = useAnswers()
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
-  const [evaluations, setEvaluations] = useState<{ [key: number]: any }>({})
+  const [evaluations, setEvaluations] = useState<{ [key: number]: EvaluationResult }>({})
   const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({})
   const { evaluateResponse } = useEvaluation()
 
@@ -44,92 +73,125 @@ export default function SummaryPage() {
     const answer = answers.find(a => a.questionId === questionId)
     
     if (question && answer) {
-      // Set loading state for this question
       setLoadingStates(prev => ({ ...prev, [questionId]: true }))
       
       try {
-        const result = await evaluateResponse(question.questionText, answer.transcription)
+        const result = await evaluateResponse(question, answer.transcription)
         if (result) {
-          // Set evaluation result for this question
           setEvaluations(prev => ({ ...prev, [questionId]: result }))
-        } else {
-          console.error('No evaluation result returned.')
         }
       } catch (error) {
         console.error('Evaluation error for question', questionId, error)
       } finally {
-        // Reset loading state for this question
         setLoadingStates(prev => ({ ...prev, [questionId]: false }))
       }
     }
   }
 
-  console.log('SummaryPage rendered with answers:', answers);
-  console.log('SummaryPage loaded questions:', questions);
-
   return (
-    <div className="min-h-screen bg-gray-100 p-5">
-      <h1 className="text-3xl font-bold mb-5">Interview Summary</h1>
-      {answers.length === 0 ? (
-        <p>No answers recorded yet.</p>
-      ) : (
-        answers.map((answer, index) => {
-          const question = getQuestionById(answer.questionId)
-          
-          if (!question) {
-            return (
-              <div key={`${answer.questionId}-${index}`} className="bg-white p-5 rounded-lg shadow-md mb-5">
-                <p>Question not found for ID: {answer.questionId}</p>
-                <div className="mt-5">
-                  <h3 className="font-semibold mb-2">Your Answer:</h3>
-                  <audio src={answer.audioUrl} controls className="mb-3" />
-                  <h3 className="font-semibold mb-2">Transcription:</h3>
-                  <p>{answer.transcription}</p>
-                </div>
-              </div>
-            )
-          }
-
-          const isLoading = loadingStates[answer.questionId] || false
-          const evaluation = evaluations[answer.questionId]
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <h1 className="text-3xl font-bold mb-8">Interview Summary</h1>
+        
+        {questions.map(question => {
+          const answer = answers.find(a => a.questionId === question.id)
+          const evaluation = evaluations[question.id]
+          const isLoading = loadingStates[question.id]
 
           return (
-            <div key={`${answer.questionId}-${index}`} className="bg-white p-5 rounded-lg shadow-md mb-5">
-              <QuestionDisplay
-                questionNumber={question.id}
-                questionTitle={question.title}
-                questionText={question.questionText}
-              />
-              <div className="mt-5">
-                <h3 className="font-semibold mb-2">Your Answer:</h3>
-                <audio src={answer.audioUrl} controls className="mb-3" />
-                <h3 className="font-semibold mb-2">Transcription:</h3>
-                <p>{answer.transcription}</p>
-              </div>
-              <Button 
-                onClick={() => handleEvaluate(answer.questionId)} 
-                disabled={isLoading}
-                className="mt-4"
-              >
-                {isLoading ? 'Evaluating...' : 'Evaluate Answer'}
-              </Button>
-              {evaluation && (
-                <div className="mt-4">
-                  <h3 className="font-semibold">Evaluation:</h3>
-                  <p><strong>Overall Assessment:</strong> {evaluation.overall_assessment}</p>
-                  <p><strong>Score:</strong> {evaluation.score}/10</p>
-                  <p><strong>Strengths:</strong> {evaluation.strengths.join(', ')}</p>
-                  <p><strong>Areas for Improvement:</strong> {evaluation.areas_for_improvement.join(', ')}</p>
-                  <p><strong>Soft Skills Demonstrated:</strong> {evaluation.soft_skills_demonstrated.join(', ')}</p>
+            <Card key={question.id} className="bg-card">
+              <CardHeader>
+                <CardTitle>Question {question.id}: {question.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-muted p-4 rounded-md">
+                  <h3 className="font-semibold mb-2">Your Response:</h3>
+                  <p className="text-muted-foreground">
+                    {answer?.transcription || 'No response recorded'}
+                  </p>
                 </div>
-              )}
-            </div>
+
+                {!evaluation && !isLoading && (
+                  <Button onClick={() => handleEvaluate(question.id)}>
+                    Evaluate Response
+                  </Button>
+                )}
+
+                {isLoading && (
+                  <div className="text-center p-4">
+                    <p>Evaluating response...</p>
+                  </div>
+                )}
+
+                {evaluation && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold mb-2">Overall Assessment</h3>
+                      <p className="text-muted-foreground">{evaluation.overall_assessment}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2">Criteria Scores</h3>
+                      <div className="space-y-4">
+                        {evaluation.criteria_scores.map((criterion, index) => (
+                          <div key={index} className="bg-muted p-4 rounded-md">
+                            <div className="flex justify-between items-center mb-2">
+                              <h4 className="font-medium">{criterion.criterion_name}</h4>
+                              <span className="bg-primary text-primary-foreground px-2 py-1 rounded">
+                                Score: {criterion.score}/5
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {criterion.justification}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2">Key Observations</h3>
+                      <ul className="list-disc list-inside space-y-1">
+                        {evaluation.key_observations.map((observation, index) => (
+                          <li key={index} className="text-muted-foreground">
+                            {observation}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2">Suggestions for Improvement</h3>
+                      <ul className="list-disc list-inside space-y-1">
+                        {evaluation.improvement_suggestions.map((suggestion, index) => (
+                          <li key={index} className="text-muted-foreground">
+                            {suggestion}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-primary/10 p-4 rounded-md">
+                      <h3 className="font-semibold mb-2">Total Score</h3>
+                      <p className="text-2xl font-bold">
+                        {evaluation.total_score.toFixed(1)}/5.0
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           )
-        })
-      )}
-      <Link href="/">
-        <Button>Back to Home</Button>
-      </Link>
+        })}
+
+        <div className="flex justify-center mt-8">
+          <Link href="/">
+            <Button variant="outline" size="lg">
+              Return to Home
+            </Button>
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }
