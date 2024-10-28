@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react"
 import { Timer } from "@/components/Timer"
 import { QuestionDisplay } from "@/components/QuestionDisplay"
-import { Navigation } from "@/components/Navigation"
-import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { AudioRecorder } from "@/components/AudioRecorder"
+import { useAudioRecorder } from "@/hooks/useAudioRecorder"
+import { useAnswers } from "@/contexts/AnswersContext"
+import { Mic } from "lucide-react"
 
 interface QuizQuestion {
   id: number
@@ -16,9 +16,15 @@ interface QuizQuestion {
   timeLimit: number
 }
 
+type QuestionState = 'ready' | 'recording'
+
 export function InterviewInterfaceComponent() {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [questionState, setQuestionState] = useState<QuestionState>('ready')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { startRecording, stopRecording, isRecording, audioURL, transcription } = useAudioRecorder()
+  const { addAnswer } = useAnswers()
 
   useEffect(() => {
     fetch('/quizData.json')
@@ -27,67 +33,100 @@ export function InterviewInterfaceComponent() {
       .catch(error => console.error('Error fetching quiz data:', error))
   }, [])
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
+  // New useEffect to handle submission
+  useEffect(() => {
+    if (isSubmitting && audioURL && transcription) {
+      // Save the answer
+      addAnswer({
+        questionId: questions[currentQuestionIndex].id,
+        audioUrl: audioURL,
+        transcription: transcription
+      })
+
+      // Move to next question or summary
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1)
+        setQuestionState('ready')
+      } else {
+        window.location.href = '/summary'
+      }
+      
+      setIsSubmitting(false)
     }
+  }, [isSubmitting, audioURL, transcription, currentQuestionIndex, questions, addAnswer])
+
+  const handleReady = async () => {
+    await startRecording()
+    setQuestionState('recording')
   }
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
-    }
+  const handleSubmit = () => {
+    setIsSubmitting(true)
+    stopRecording()
   }
 
-  if (questions.length === 0) {
-    return <div>Loading...</div>
-  }
+  if (questions.length === 0) return <div>Loading...</div>
 
   const currentQuestion = questions[currentQuestionIndex]
-
-  const isLastQuestion = currentQuestionIndex === questions.length - 1
 
   return (
     <div className="min-h-screen bg-gray-100 p-5 flex flex-col">
       <header className="flex justify-between items-center mb-5">
         <div className="text-lg font-semibold" aria-label="Progress">
-          {currentQuestionIndex + 1} / {questions.length}
+          Question {currentQuestionIndex + 1} of {questions.length}
         </div>
-        <Timer 
-          initialTime={currentQuestion.timeLimit} 
-          timerKey={currentQuestion.id}
-        />
+        {questionState === 'recording' && (
+          <Timer 
+            initialTime={currentQuestion.timeLimit} 
+            timerKey={currentQuestion.id}
+          />
+        )}
       </header>
+
       <main className="flex-grow flex flex-col justify-center items-center space-y-5">
-        <QuestionDisplay 
-          questionNumber={currentQuestionIndex + 1}
-          questionTitle={currentQuestion.title}
-          questionText={currentQuestion.questionText}
-        />
-        {currentQuestion.instructions && currentQuestion.instructions.trim() !== '' && (
-          <div className="bg-white p-5 rounded-lg shadow-md w-full max-w-3xl">
-            <h2 className="text-lg font-semibold mb-2">Instructions:</h2>
-            <p className="text-gray-700">{currentQuestion.instructions}</p>
+        {questionState === 'ready' ? (
+          <div className="max-w-2xl w-full space-y-6">
+            <h2 className="text-2xl font-semibold text-center">Are you ready?</h2>
+            <div className="bg-white p-6 rounded-lg shadow">
+              <p className="mb-4">Once you click "I'm Ready":</p>
+              <ul className="list-disc pl-5 space-y-2 mb-6">
+                <li>Recording will start automatically</li>
+                <li>Read the question carefully</li>
+                <li>Take your time to answer thoroughly</li>
+                <li>Click "Submit" when you're done</li>
+              </ul>
+              <Button 
+                onClick={handleReady}
+                className="w-full"
+                size="lg"
+              >
+                I'm Ready
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full max-w-3xl space-y-6">
+            <QuestionDisplay 
+              questionNumber={currentQuestionIndex + 1}
+              questionTitle={currentQuestion.title}
+              questionText={currentQuestion.questionText}
+            />
+            
+            <div className="flex items-center justify-center space-x-2 text-red-500">
+              <Mic className="animate-pulse" />
+              <span>Recording in progress...</span>
+            </div>
+
+            <Button 
+              onClick={handleSubmit}
+              className="w-full"
+              size="lg"
+            >
+              Submit Answer
+            </Button>
           </div>
         )}
-        <AudioRecorder questionId={currentQuestion.id} />
       </main>
-      <Navigation 
-        currentQuestion={currentQuestionIndex + 1}
-        totalQuestions={questions.length}
-        onPrevious={handlePreviousQuestion}
-        onNext={handleNextQuestion}
-      />
-      {isLastQuestion && (
-        <div className="mt-5 flex justify-center space-x-4">
-          <Link href="/">
-            <Button className="text-lg py-2 px-4">Finish Quiz</Button>
-          </Link>
-          <Link href="/summary">
-            <Button className="text-lg py-2 px-4">View Summary</Button>
-          </Link>
-        </div>
-      )}
     </div>
   )
 }
