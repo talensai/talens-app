@@ -2,10 +2,10 @@ import { useState, useEffect } from "react"
 
 interface TimerProps {
   initialTime: number
-  key: number
+  timerKey?: number // renamed from key to timerKey
 }
 
-export function Timer({ initialTime, key }: TimerProps) {
+export function Timer({ initialTime, timerKey }: TimerProps) {
   const [time, setTime] = useState(initialTime)
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function Timer({ initialTime, key }: TimerProps) {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [initialTime])
+  }, [initialTime, timerKey]) // Add timerKey to dependencies
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)

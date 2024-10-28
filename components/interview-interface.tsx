@@ -55,7 +55,7 @@ export function InterviewInterfaceComponent() {
         </div>
         <Timer 
           initialTime={currentQuestion.timeLimit} 
-          key={currentQuestion.id}
+          timerKey={currentQuestion.id}
         />
       </header>
       <main className="flex-grow flex flex-col justify-center items-center space-y-5">
