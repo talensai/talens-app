@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useState, useEffect } from "react"
 import { useEvaluation } from "@/hooks/useEvaluation"
+import TestConnection from '@/app/test-connection'
 
 interface RubricPoint {
   score: number;
@@ -94,6 +95,32 @@ export default function SummaryPage() {
 
   // Sort answers to match question order
   const sortedAnswers = [...answers].sort((a, b) => a.questionId - b.questionId)
+
+  const handleSaveToDatabase = async () => {
+    try {
+      const response = await fetch('/api/database/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          answers: answers.map(answer => ({
+            question_id: answer.questionId,
+            audio_url: answer.audioUrl,
+            transcription: answer.transcription,
+            evaluation: evaluations[answer.questionId] || null
+          }))
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to save')
+      
+      alert('Interview data saved successfully!')
+    } catch (error) {
+      console.error('Error saving to database:', error)
+      alert('Failed to save interview data')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -215,12 +242,20 @@ export default function SummaryPage() {
           )
         })}
 
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center gap-4 mt-8">
           <Link href="/">
             <Button variant="outline" size="lg">
               Return to Home
             </Button>
           </Link>
+          <Button 
+            size="lg" 
+            onClick={handleSaveToDatabase}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Save to Database
+          </Button>
+          {/* <TestConnection /> */}
         </div>
       </div>
     </div>
