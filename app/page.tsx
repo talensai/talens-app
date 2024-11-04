@@ -37,7 +37,7 @@ export default function StartingScreen() {
           We're interested in your authentic responses. Unauthorized assistance will result in disqualification.
         </p>
 
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-8 space-x-4">
           <Link href="/interview">
             <Button className="bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c] font-semibold py-2 px-6 rounded-full text-lg transition duration-300 ease-in-out">
               Start Interview
