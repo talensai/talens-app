@@ -197,15 +197,8 @@
       "id": 6,
       "title": "Concept",
       "questionText": "Parkinson's Law is the idea that 'work expands to fill the time available for its completion.' This means that if you give yourself a week to complete a two-hour task, the task will take up the whole week because you'll stretch it out or procrastinate. On the other hand, if you give yourself a tighter deadline, you're more likely to complete the task efficiently. The idea encourages setting shorter deadlines to increase productivity and avoid wasting time.",
-      "instructions": "We will explain you a concept and then ask you questions about it.",
-      "timeLimit": 60
-    },
-    {
-      "id": 6,
-      "title": "Concept",
-      "questionText": "",
-      "instructions": "Can you summarize Parkinson's Law in your own words?",
-      "timeLimit": 120
+      "instructions": "Can you explain Parkinson's Law in your own words?",
+      "timeLimit": 180
     }
   ]
 }
