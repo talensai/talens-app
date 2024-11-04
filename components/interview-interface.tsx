@@ -23,6 +23,7 @@ export function InterviewInterfaceComponent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [questionState, setQuestionState] = useState<QuestionState>('ready')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const { startRecording, stopRecording, isRecording, audioURL, transcription } = useAudioRecorder()
   const { addAnswer } = useAnswers()
 
@@ -52,6 +53,7 @@ export function InterviewInterfaceComponent() {
       }
       
       setIsSubmitting(false)
+      setIsLoading(false)
     }
   }, [isSubmitting, audioURL, transcription, currentQuestionIndex, questions, addAnswer])
 
@@ -61,6 +63,7 @@ export function InterviewInterfaceComponent() {
   }
 
   const handleSubmit = () => {
+    setIsLoading(true)
     setIsSubmitting(true)
     stopRecording()
   }
@@ -121,8 +124,16 @@ export function InterviewInterfaceComponent() {
               onClick={handleSubmit}
               className="w-full"
               size="lg"
+              disabled={isLoading}
             >
-              Submit Answer
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Processing...
+                </div>
+              ) : (
+                'Submit Answer'
+              )}
             </Button>
           </div>
         )}
