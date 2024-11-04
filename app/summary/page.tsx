@@ -27,38 +27,14 @@ interface QuizQuestion {
   };
 }
 
-interface Answer {
-  questionId: number
-  audioUrl: string
-  transcription: string
-}
-
-interface EvaluationResult {
-  overall_assessment: string
-  score: number
-  strengths: string[]
-  areas_for_improvement: string[]
-  soft_skills_demonstrated: string[]
-  criteria_scores: {
-    criterion_name: string
-    score: number
-    justification: string
-  }[]
-  key_observations: string[]
-  improvement_suggestions: string[]
-  total_score: number
-}
-
 export default function SummaryPage() {
   const { answers, clearAnswers } = useAnswers()
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
-  const [evaluations, setEvaluations] = useState<{ [key: number]: EvaluationResult }>({})
 
   useEffect(() => {
     fetch('/quizData.json')
       .then(response => response.json())
       .then(data => {
-        // Sort questions by ID to ensure consistent order
         const sortedQuestions = [...data.questions].sort((a, b) => a.id - b.id)
         setQuestions(sortedQuestions)
       })
@@ -89,7 +65,7 @@ export default function SummaryPage() {
                 rubric: question?.rubric
               },
               transcription: answer.transcription,
-              evaluation: evaluations[answer.questionId] || null
+              evaluation: null
             }
           })
         })
