@@ -113,6 +113,7 @@ export function InterviewInterfaceComponent() {
               questionNumber={currentQuestionIndex + 1}
               questionTitle={currentQuestion.title}
               questionText={currentQuestion.questionText}
+              instructions={currentQuestion.instructions}
             />
             
             <div className="flex items-center justify-center space-x-2 text-red-500">
