@@ -3,10 +3,8 @@
 import { useAnswers } from "@/contexts/AnswersContext"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { useState, useEffect } from "react"
-import { useEvaluation } from "@/hooks/useEvaluation"
-import TestConnection from '@/app/test-connection'
 
 interface RubricPoint {
   score: number;

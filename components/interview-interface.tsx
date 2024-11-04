@@ -24,7 +24,7 @@ export function InterviewInterfaceComponent() {
   const [questionState, setQuestionState] = useState<QuestionState>('ready')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { startRecording, stopRecording, isRecording, audioURL, transcription } = useAudioRecorder()
+  const { startRecording, stopRecording, audioURL, transcription } = useAudioRecorder()
   const { addAnswer } = useAnswers()
 
   useEffect(() => {

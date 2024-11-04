@@ -5,7 +5,7 @@ interface QuestionDisplayProps {
     instructions: string
   }
   
-  export function QuestionDisplay({ questionNumber, questionTitle, questionText, instructions }: QuestionDisplayProps) {
+  export function QuestionDisplay({ questionTitle, questionText, instructions }: QuestionDisplayProps) {
     return (
       <div className="bg-white p-6 rounded-lg shadow space-y-4">
         <h2 className="text-2xl font-semibold">
