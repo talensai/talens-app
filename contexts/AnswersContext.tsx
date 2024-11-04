@@ -11,6 +11,7 @@ interface Answer {
 interface AnswersContextType {
   answers: Answer[];
   addAnswer: (answer: Answer) => void;
+  clearAnswers: () => void;
 }
 
 const AnswersContext = createContext<AnswersContextType | undefined>(undefined);
@@ -39,10 +40,15 @@ export function AnswersProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const clearAnswers = () => {
+    setAnswers([]);
+    sessionStorage.removeItem('interviewAnswers');
+  };
+
   console.log('Current answers in context:', answers);
 
   return (
-    <AnswersContext.Provider value={{ answers, addAnswer }}>
+    <AnswersContext.Provider value={{ answers, addAnswer, clearAnswers }}>
       {children}
     </AnswersContext.Provider>
   );

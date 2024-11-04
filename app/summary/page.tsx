@@ -52,7 +52,7 @@ interface EvaluationResult {
 }
 
 export default function SummaryPage() {
-  const { answers } = useAnswers()
+  const { answers, clearAnswers } = useAnswers()
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [evaluations, setEvaluations] = useState<{ [key: number]: EvaluationResult }>({})
 
@@ -99,6 +99,7 @@ export default function SummaryPage() {
 
       if (!response.ok) throw new Error('Failed to save');
       
+      clearAnswers();
       alert('Interview data saved successfully!');
     } catch (error) {
       console.error('Error saving to database:', error);
