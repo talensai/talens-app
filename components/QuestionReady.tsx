@@ -15,7 +15,7 @@ export function QuestionReady({ onReady, questionNumber, totalQuestions }: Quest
         Question {questionNumber} of {totalQuestions}
       </h2>
       
-      <Card className="bg-[#f5f5f5] p-6 border-none shadow-lg">
+      <div className="bg-[#f5f5f5] rounded-3xl p-8">
         <h3 className="text-xl font-semibold text-[#1c3c1c] mb-4">Before you begin:</h3>
         <ul className="space-y-4 text-[#1c3c1c] mb-6">
           <li className="flex items-center">
@@ -34,12 +34,12 @@ export function QuestionReady({ onReady, questionNumber, totalQuestions }: Quest
         
         <Button 
           onClick={onReady}
-          className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c] font-semibold transition duration-300 ease-in-out"
+          className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c] font-semibold rounded-2xl transition-colors"
           size="lg"
         >
           I'm Ready
         </Button>
-      </Card>
+      </div>
     </div>
   )
 }

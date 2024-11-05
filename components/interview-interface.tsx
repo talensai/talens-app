@@ -8,6 +8,7 @@ import { useAudioRecorder } from "@/hooks/useAudioRecorder"
 import { useAnswers } from "@/contexts/AnswersContext"
 import { Mic } from "lucide-react"
 import { QuestionReady } from "@/components/QuestionReady"
+import { Card } from "@/components/ui/card"
 
 interface QuizQuestion {
   id: number
@@ -74,17 +75,15 @@ export function InterviewInterfaceComponent() {
   const currentQuestion = questions[currentQuestionIndex]
 
   return (
-    <div className="min-h-screen bg-gray-100 p-5 flex flex-col">
+    <div className="min-h-screen bg-white p-5 flex flex-col">
       <header className="flex justify-between items-center mb-5">
-        <div className="text-lg font-semibold" aria-label="Progress">
+        <div className="text-lg font-medium text-[#1c3c1c]" aria-label="Progress">
           Question {currentQuestionIndex + 1} of {questions.length}
         </div>
-        {questionState === 'recording' && (
-          <Timer 
-            initialTime={currentQuestion.timeLimit} 
-            timerKey={currentQuestion.id}
-          />
-        )}
+        <Timer 
+          initialTime={currentQuestion.timeLimit} 
+          timerKey={currentQuestion.id}
+        />
       </header>
 
       <main className="flex-grow flex flex-col justify-center items-center space-y-5">
@@ -95,34 +94,40 @@ export function InterviewInterfaceComponent() {
             totalQuestions={questions.length}
           />
         ) : (
-          <div className="w-full max-w-3xl space-y-6">
-            <QuestionDisplay 
-              questionNumber={currentQuestionIndex + 1}
-              questionTitle={currentQuestion.title}
-              questionText={currentQuestion.questionText}
-              instructions={currentQuestion.instructions}
-            />
-            
-            <div className="flex items-center justify-center space-x-2 text-red-500">
-              <Mic className="animate-pulse" />
-              <span>Recording in progress...</span>
+          <div className="w-full max-w-3xl">
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center gap-3 py-2 px-4">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-sm font-medium tracking-wide uppercase text-[#1c3c1c]">
+                  Recording in Progress
+                </span>
+              </div>
             </div>
 
-            <Button 
-              onClick={handleSubmit}
-              className="w-full"
-              size="lg"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Processing...
-                </div>
-              ) : (
-                'Submit Answer'
-              )}
-            </Button>
+            <div className="space-y-8">
+              <QuestionDisplay 
+                questionNumber={currentQuestionIndex + 1}
+                questionTitle={currentQuestion.title}
+                questionText={currentQuestion.questionText}
+                instructions={currentQuestion.instructions}
+              />
+
+              <Button 
+                onClick={handleSubmit}
+                className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c] font-semibold rounded-2xl transition-colors"
+                size="lg"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-[#1c3c1c] border-t-transparent rounded-full animate-spin" />
+                    <span>Processing...</span>
+                  </div>
+                ) : (
+                  'Submit Answer'
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </main>
