@@ -6,9 +6,7 @@ import { QuestionDisplay } from "@/components/QuestionDisplay"
 import { Button } from "@/components/ui/button"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
 import { useAnswers } from "@/contexts/AnswersContext"
-import { Mic } from "lucide-react"
 import { QuestionReady } from "@/components/QuestionReady"
-import { Card } from "@/components/ui/card"
 
 interface QuizQuestion {
   id: number

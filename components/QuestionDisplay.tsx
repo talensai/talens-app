@@ -1,5 +1,3 @@
-import { Card } from "@/components/ui/card"
-
 interface QuestionDisplayProps {
   questionNumber: number
   questionTitle: string

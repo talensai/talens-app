@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Mic, Speech, CheckSquare } from 'lucide-react'
 
 interface QuestionReadyProps {
