@@ -15,10 +15,6 @@ export default function StartingScreen() {
           <h2 className="text-2xl font-semibold text-[#1c3c1c] mb-4">Interview Instructions</h2>
           <ul className="space-y-4 text-[#1c3c1c]">
             <li className="flex items-center">
-              <Camera className="mr-3 text-[#1c3c1c] flex-shrink-0" size={24} />
-              <span className="text-lg">Enable your camera</span>
-            </li>
-            <li className="flex items-center">
               <MessageSquare className="mr-3 text-[#1c3c1c] flex-shrink-0" size={24} />
               <span className="text-lg">Read questions aloud before answering</span>
             </li>

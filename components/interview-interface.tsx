@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
 import { useAnswers } from "@/contexts/AnswersContext"
 import { Mic } from "lucide-react"
+import { QuestionReady } from "@/components/QuestionReady"
 
 interface QuizQuestion {
   id: number
@@ -88,25 +89,11 @@ export function InterviewInterfaceComponent() {
 
       <main className="flex-grow flex flex-col justify-center items-center space-y-5">
         {questionState === 'ready' ? (
-          <div className="max-w-2xl w-full space-y-6">
-            <h2 className="text-2xl font-semibold text-center">Are you ready?</h2>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <p className="mb-4">Once you click "I'm Ready":</p>
-              <ul className="list-disc pl-5 space-y-2 mb-6">
-                <li>Recording will start automatically</li>
-                <li>Read the question carefully</li>
-                <li>Take your time to answer thoroughly</li>
-                <li>Click "Submit" when you're done</li>
-              </ul>
-              <Button 
-                onClick={handleReady}
-                className="w-full"
-                size="lg"
-              >
-                I'm Ready
-              </Button>
-            </div>
-          </div>
+          <QuestionReady 
+            onReady={handleReady}
+            questionNumber={currentQuestionIndex + 1}
+            totalQuestions={questions.length}
+          />
         ) : (
           <div className="w-full max-w-3xl space-y-6">
             <QuestionDisplay 
