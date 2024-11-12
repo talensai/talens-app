@@ -50,6 +50,9 @@ export function useAudioRecorder() {
           console.error('Error transcribing audio:', error)
         }
 
+        // Upload the audio to Supabase
+        await uploadAudio(audioBlob)
+
         // Stop all tracks on the stream to release the microphone
         stream.getTracks().forEach(track => track.stop())
 
@@ -74,6 +77,25 @@ export function useAudioRecorder() {
       console.log('No active recording to stop');
     }
   }, [isRecording])
+
+  const uploadAudio = async (audioBlob: Blob) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', audioBlob, 'audio.mp3')
+      formData.append('questionId', 'your-question-id') // Replace with actual question ID
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        console.error('Failed to upload audio')
+      }
+    } catch (error) {
+      console.error('Error uploading audio:', error)
+    }
+  }
 
   // Add this useEffect to log state changes
   useEffect(() => {
