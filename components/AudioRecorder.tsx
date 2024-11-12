@@ -4,12 +4,12 @@ import { useAnswers } from "@/contexts/AnswersContext"
 import { useState, useEffect } from 'react'
 
 export function AudioRecorder({ questionId }: { questionId: number }) {
-  const { isRecording, audioURL, transcription, startRecording, stopRecording } = useAudioRecorder()
+  const { isRecording, audioURL, startRecording, stopRecording } = useAudioRecorder(questionId)
   const { addAnswer } = useAnswers()
   const [activeQuestionId, setActiveQuestionId] = useState<number | null>(null)
 
   const handleStartRecording = async () => {
-    setActiveQuestionId(questionId) // Store the current questionId
+    setActiveQuestionId(questionId)
     await startRecording()
   }
 
@@ -18,12 +18,12 @@ export function AudioRecorder({ questionId }: { questionId: number }) {
   }
 
   useEffect(() => {
-    if (!isRecording && audioURL && transcription && activeQuestionId !== null) {
-      console.log('Adding answer:', { questionId: activeQuestionId, audioUrl: audioURL, transcription })
-      addAnswer({ questionId: activeQuestionId, audioUrl: audioURL, transcription })
-      setActiveQuestionId(null) // Reset after adding answer
+    if (!isRecording && audioURL && activeQuestionId !== null) {
+      console.log('Adding answer:', { questionId: activeQuestionId, audioUrl: audioURL })
+      addAnswer({ questionId: activeQuestionId, audioUrl: audioURL, transcription: null })
+      setActiveQuestionId(null)
     }
-  }, [isRecording, audioURL, transcription, activeQuestionId, addAnswer])
+  }, [isRecording, audioURL, activeQuestionId, addAnswer])
 
   return (
     <div className="mt-4">

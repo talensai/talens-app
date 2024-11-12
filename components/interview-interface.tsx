@@ -24,7 +24,7 @@ export function InterviewInterfaceComponent() {
   const [questionState, setQuestionState] = useState<QuestionState>('ready')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { startRecording, stopRecording, audioURL, transcription } = useAudioRecorder()
+  const { startRecording, stopRecording, audioURL } = useAudioRecorder(questions[currentQuestionIndex]?.id)
   const { addAnswer } = useAnswers()
 
   useEffect(() => {
@@ -36,12 +36,12 @@ export function InterviewInterfaceComponent() {
 
   // New useEffect to handle submission
   useEffect(() => {
-    if (isSubmitting && audioURL && transcription) {
+    if (isSubmitting && audioURL) {
       // Save the answer
       addAnswer({
         questionId: questions[currentQuestionIndex].id,
         audioUrl: audioURL,
-        transcription: transcription
+        transcription: null
       })
 
       // Move to next question or summary
@@ -55,7 +55,7 @@ export function InterviewInterfaceComponent() {
       setIsSubmitting(false)
       setIsLoading(false)
     }
-  }, [isSubmitting, audioURL, transcription, currentQuestionIndex, questions, addAnswer])
+  }, [isSubmitting, audioURL, currentQuestionIndex, questions, addAnswer])
 
   const handleReady = async () => {
     await startRecording()

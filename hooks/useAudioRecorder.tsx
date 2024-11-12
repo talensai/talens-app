@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 
-export function useAudioRecorder() {
+export function useAudioRecorder(questionId: number) {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
-  const [transcription, setTranscription] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
@@ -14,7 +13,6 @@ export function useAudioRecorder() {
     try {
       // Clear previous recording data
       setAudioURL(null)
-      setTranscription(null)
       chunksRef.current = []
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -29,27 +27,6 @@ export function useAudioRecorder() {
         const audioUrl = URL.createObjectURL(audioBlob)
         setAudioURL(audioUrl)
         
-        // Transcribe the audio
-        try {
-          const formData = new FormData()
-          formData.append('file', audioBlob, 'audio.mp3')
-          formData.append('model', 'whisper-1')
-
-          const response = await fetch('/api/transcribe', {
-            method: 'POST',
-            body: formData,
-          })
-
-          if (response.ok) {
-            const data = await response.json()
-            setTranscription(data.text)
-          } else {
-            console.error('Transcription failed')
-          }
-        } catch (error) {
-          console.error('Error transcribing audio:', error)
-        }
-
         // Upload the audio to Supabase
         await uploadAudio(audioBlob)
 
@@ -80,9 +57,11 @@ export function useAudioRecorder() {
 
   const uploadAudio = async (audioBlob: Blob) => {
     try {
+      console.log("uploading audio")
       const formData = new FormData()
+      console.log("questionId", questionId)
       formData.append('file', audioBlob, 'audio.mp3')
-      formData.append('questionId', 'your-question-id') // Replace with actual question ID
+      formData.append('questionId', questionId.toString())
 
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -99,13 +78,13 @@ export function useAudioRecorder() {
 
   // Add this useEffect to log state changes
   useEffect(() => {
-    console.log('Audio state updated:', { isRecording, audioURL, transcription });
-  }, [isRecording, audioURL, transcription]);
+    console.log('Audio state updated:', { isRecording, audioURL });
+  }, [isRecording, audioURL]);
 
   return {
     isRecording,
     audioURL,
-    transcription,
+    transcription: null,
     startRecording,
     stopRecording
   }
