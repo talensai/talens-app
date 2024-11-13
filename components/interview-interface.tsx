@@ -36,19 +36,31 @@ export function InterviewInterfaceComponent() {
 
   // New useEffect to handle submission
   useEffect(() => {
+    console.log('Submission effect triggered:', {
+      isSubmitting,
+      audioURL,
+      currentQuestionIndex,
+      questionId: questions[currentQuestionIndex]?.id
+    })
+
     if (isSubmitting && audioURL) {
-      // Save the answer
+      console.log('Adding answer to context:', {
+        questionId: questions[currentQuestionIndex].id,
+        audioUrl: audioURL
+      })
+
       addAnswer({
         questionId: questions[currentQuestionIndex].id,
         audioUrl: audioURL,
         transcription: null
       })
 
-      // Move to next question or summary
       if (currentQuestionIndex < questions.length - 1) {
+        console.log('Moving to next question')
         setCurrentQuestionIndex(prev => prev + 1)
         setQuestionState('ready')
       } else {
+        console.log('Interview complete, redirecting to summary')
         window.location.href = '/summary'
       }
       
@@ -58,11 +70,13 @@ export function InterviewInterfaceComponent() {
   }, [isSubmitting, audioURL, currentQuestionIndex, questions, addAnswer])
 
   const handleReady = async () => {
+    console.log('Question ready, starting recording')
     await startRecording()
     setQuestionState('recording')
   }
 
   const handleSubmit = () => {
+    console.log('Submitting answer')
     setIsLoading(true)
     setIsSubmitting(true)
     stopRecording()

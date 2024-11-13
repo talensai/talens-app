@@ -1,46 +1,134 @@
-import Link from 'next/link'
+"use client"
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAnswers } from "@/contexts/AnswersContext"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
-import { Camera, MessageSquare, CheckCircle, AlertTriangle } from 'lucide-react'
+
+// This would normally come from an environment variable or backend
+const VALID_ACCESS_CODE = "TALENS2024"
 
 export default function StartingScreen() {
-  return (
-    <div className="min-h-screen bg-white flex flex-col items-center p-5 overflow-y-auto">
-      <h1 className="text-6xl font-serif text-[#1c3c1c] mb-8">Talens</h1>
-      <div className="max-w-2xl w-full space-y-8">
-        <p className="text-xl text-[#1c3c1c] mb-8">
-          Welcome to your softskills interview. Please review the following instructions before beginning.
-        </p>
-        <Card className="bg-[#f5f5f5] p-6 border-none shadow-none">
-          <h2 className="text-2xl font-semibold text-[#1c3c1c] mb-4">Interview Instructions</h2>
-          <ul className="space-y-4 text-[#1c3c1c]">
-            <li className="flex items-center">
-              <MessageSquare className="mr-3 text-[#1c3c1c] flex-shrink-0" size={24} />
-              <span className="text-lg">Read questions aloud before answering</span>
-            </li>
-            <li className="flex items-center">
-              <CheckCircle className="mr-3 text-[#1c3c1c] flex-shrink-0" size={24} />
-              <span className="text-lg">Speak your thoughts aloud</span>
-            </li>
-            <li className="flex items-center">
-              <AlertTriangle className="mr-3 text-[#1c3c1c] flex-shrink-0" size={24} />
-              <span className="text-lg">No external help or AI tools allowed</span>
-            </li>
-          </ul>
-        </Card>
+  const [step, setStep] = useState<'auth' | 'instructions'>('auth')
+  const [name, setName] = useState('')
+  const [accessCode, setAccessCode] = useState('')
+  const [error, setError] = useState('')
+  const { initializeInterview, setUserName } = useAnswers()
+  const router = useRouter()
 
-        <p className="text-lg text-[#1c3c1c] italic">
-          We're interested in your authentic responses. Unauthorized assistance will result in disqualification.
-        </p>
+  const handleSubmitAuth = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
 
-        <div className="flex justify-center mt-8 space-x-4">
-          <Link href="/interview">
-            <Button className="bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c] font-semibold py-2 px-6 rounded-full text-lg transition duration-300 ease-in-out">
-              Start Interview
+    if (!name.trim()) {
+      setError('Please enter your name')
+      return
+    }
+
+    if (accessCode !== VALID_ACCESS_CODE) {
+      setError('Invalid access code')
+      return
+    }
+
+    setUserName(name)
+    setStep('instructions')
+  }
+
+  const handleStartInterview = () => {
+    initializeInterview()
+    router.push('/interview')
+  }
+
+  if (step === 'auth') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center p-5">
+        <h1 className="text-6xl font-serif text-[#1c3c1c] mb-8">Talens</h1>
+        
+        <Card className="max-w-md w-full p-6 space-y-6">
+          <h2 className="text-2xl font-semibold text-[#1c3c1c] text-center">
+            Welcome to Your Interview
+          </h2>
+          
+          <form onSubmit={handleSubmitAuth} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-[#1c3c1c] mb-1">
+                Your Name
+              </label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="accessCode" className="block text-sm font-medium text-[#1c3c1c] mb-1">
+                Access Code
+              </label>
+              <Input
+                id="accessCode"
+                type="text"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
+                placeholder="Enter access code"
+                className="w-full"
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
+
+            <Button 
+              type="submit"
+              className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c]"
+            >
+              Continue
             </Button>
-          </Link>
-        </div>
+          </form>
+        </Card>
       </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col items-center p-5">
+      <h1 className="text-6xl font-serif text-[#1c3c1c] mb-8">Talens</h1>
+      
+      <Card className="max-w-2xl w-full space-y-8 p-6">
+        <div>
+          <h2 className="text-2xl font-semibold text-[#1c3c1c] mb-4">
+            Welcome, {name}!
+          </h2>
+          <p className="text-[#1c3c1c] mb-6">
+            Please review the following instructions before beginning your interview.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold text-[#1c3c1c]">Interview Instructions</h3>
+          <ul className="space-y-3 text-[#1c3c1c]">
+            <li>• Ensure you're in a quiet environment</li>
+            <li>• Use a good quality microphone if possible</li>
+            <li>• Read each question carefully before answering</li>
+            <li>• Speak clearly and at a normal pace</li>
+            <li>• Take time to structure your thoughts before answering</li>
+            <li>• You'll have a specific time limit for each question</li>
+          </ul>
+        </div>
+
+        <Button 
+          onClick={handleStartInterview}
+          className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c]"
+        >
+          Start Interview
+        </Button>
+      </Card>
     </div>
   )
 }

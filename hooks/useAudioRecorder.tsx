@@ -1,15 +1,17 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useAnswers } from '@/contexts/AnswersContext'
 
 export function useAudioRecorder(questionId: number) {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
+  const { interviewId } = useAnswers()
 
   console.log('useAudioRecorder hook called');
 
   const startRecording = useCallback(async () => {
-    console.log('Starting recording');
+    console.log('Starting recording for question:', questionId)
     try {
       // Clear previous recording data
       setAudioURL(null)
@@ -23,26 +25,27 @@ export function useAudioRecorder(questionId: number) {
         }
       }
       mediaRecorderRef.current.onstop = async () => {
+        console.log('Recording stopped, processing audio...')
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/mp3' })
         const audioUrl = URL.createObjectURL(audioBlob)
-        setAudioURL(audioUrl)
         
-        // Upload the audio to Supabase
-        await uploadAudio(audioBlob)
+        try {
+          const uploadedUrl = await uploadAudio(audioBlob)
+          console.log('Audio uploaded successfully:', uploadedUrl)
+          setAudioURL(uploadedUrl)
+        } catch (error) {
+          console.error('Failed to upload audio:', error)
+        }
 
-        // Stop all tracks on the stream to release the microphone
         stream.getTracks().forEach(track => track.stop())
-
-        console.log('Audio recording completed')
       }
       mediaRecorderRef.current.start()
       setIsRecording(true)
       console.log('Recording started successfully');
     } catch (error) {
-      console.error('Error accessing microphone:', error);
-      console.error('Error starting recording:', error);
+      console.error('Error in startRecording:', error)
     }
-  }, [])
+  }, [questionId, interviewId])
 
   const stopRecording = useCallback(() => {
     console.log('Stopping recording');
@@ -57,22 +60,34 @@ export function useAudioRecorder(questionId: number) {
 
   const uploadAudio = async (audioBlob: Blob) => {
     try {
-      console.log("uploading audio")
+      console.log('Starting audio upload:', {
+        questionId,
+        interviewId,
+        blobSize: audioBlob.size
+      })
+
       const formData = new FormData()
-      console.log("questionId", questionId)
       formData.append('file', audioBlob, 'audio.mp3')
       formData.append('questionId', questionId.toString())
+      formData.append('interviewId', interviewId!)
 
+      console.log('Sending upload request...')
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
 
+      const data = await response.json()
+      console.log('Upload response:', data)
+
       if (!response.ok) {
-        console.error('Failed to upload audio')
+        throw new Error(`Upload failed: ${data.error || 'Unknown error'}`)
       }
+
+      return data.url
     } catch (error) {
-      console.error('Error uploading audio:', error)
+      console.error('Error in uploadAudio:', error)
+      throw error
     }
   }
 

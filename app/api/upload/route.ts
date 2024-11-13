@@ -8,27 +8,40 @@ const supabase = createClient(
 
 export async function POST(request: Request) {
   try {
+    console.log('Received upload request')
     const formData = await request.formData()
     const file = formData.get('file') as File
     const questionId = formData.get('questionId') as string
+    const interviewId = formData.get('interviewId') as string
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+    console.log('Upload request details:', {
+      questionId,
+      interviewId,
+      fileSize: file?.size,
+      fileName: file?.name
+    })
+
+    if (!file || !interviewId) {
+      console.error('Missing required fields:', { file: !!file, interviewId })
+      return NextResponse.json(
+        { error: 'Missing required fields' }, 
+        { status: 400 }
+      )
     }
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
     // Upload to Supabase Storage
-    const fileName = `answer_${questionId}_${Date.now()}.mp3`
-    const { data, error } = await supabase
+    const fileName = `answer_${interviewId}_${questionId}_${Date.now()}.mp3`
+    const { data: uploadData, error: uploadError } = await supabase
       .storage
       .from('interview-answers')
       .upload(fileName, buffer, {
         contentType: 'audio/mp3'
       })
 
-    if (error) throw error
+    if (uploadError) throw uploadError
 
     // Get public URL
     const { data: { publicUrl } } = supabase
@@ -36,9 +49,30 @@ export async function POST(request: Request) {
       .from('interview-answers')
       .getPublicUrl(fileName)
 
+    console.log('File uploaded to storage:', {
+      fileName,
+      publicUrl
+    })
+
+    // Store answer in database
+    const { error: dbError } = await supabase
+      .from('answers')
+      .insert({
+        interview_id: interviewId,
+        question_id: questionId,
+        audio_url: publicUrl,
+        created_at: new Date().toISOString()
+      })
+
+    if (dbError) {
+      console.error('Database insert error:', dbError)
+      throw dbError
+    }
+
+    console.log('Answer stored in database')
     return NextResponse.json({ url: publicUrl })
   } catch (error) {
-    console.error('Error uploading file:', error)
+    console.error('Error in upload handler:', error)
     return NextResponse.json({ error: 'Error uploading file' }, { status: 500 })
   }
 } 
