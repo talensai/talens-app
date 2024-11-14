@@ -54,22 +54,6 @@ export async function POST(request: Request) {
       publicUrl
     })
 
-    // Store answer in database
-    const { error: dbError } = await supabase
-      .from('answers')
-      .insert({
-        interview_id: interviewId,
-        question_id: questionId,
-        audio_url: publicUrl,
-        created_at: new Date().toISOString()
-      })
-
-    if (dbError) {
-      console.error('Database insert error:', dbError)
-      throw dbError
-    }
-
-    console.log('Answer stored in database')
     return NextResponse.json({ url: publicUrl })
   } catch (error) {
     console.error('Error in upload handler:', error)

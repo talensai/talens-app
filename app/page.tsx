@@ -113,12 +113,9 @@ export default function StartingScreen() {
         <div className="space-y-4">
           <h3 className="text-xl font-semibold text-[#1c3c1c]">Interview Instructions</h3>
           <ul className="space-y-3 text-[#1c3c1c]">
-            <li>• Ensure you're in a quiet environment</li>
-            <li>• Use a good quality microphone if possible</li>
-            <li>• Read each question carefully before answering</li>
-            <li>• Speak clearly and at a normal pace</li>
-            <li>• Take time to structure your thoughts before answering</li>
-            <li>• You'll have a specific time limit for each question</li>
+            <li>• Read questions aloud before answering</li>
+            <li>• Speak your thoughts aloud</li>
+            <li>• No external help or AI tools allowed</li>
           </ul>
         </div>
 

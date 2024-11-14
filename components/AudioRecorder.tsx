@@ -19,11 +19,9 @@ export function AudioRecorder({ questionId }: { questionId: number }) {
 
   useEffect(() => {
     if (!isRecording && audioURL && activeQuestionId !== null) {
-      console.log('Adding answer:', { questionId: activeQuestionId, audioUrl: audioURL })
-      addAnswer({ questionId: activeQuestionId, audioUrl: audioURL, transcription: null })
       setActiveQuestionId(null)
     }
-  }, [isRecording, audioURL, activeQuestionId, addAnswer])
+  }, [isRecording, audioURL, activeQuestionId])
 
   return (
     <div className="mt-4">

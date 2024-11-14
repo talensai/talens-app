@@ -2,11 +2,13 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import quizData from '@/public/quizData.json';
 
 interface Answer {
   questionId: number;
   audioUrl: string;
   transcription: string | null;
+  questionData?: any;
 }
 
 interface AnswersContextType {
@@ -63,13 +65,32 @@ export function AnswersProvider({ children }: { children: ReactNode }) {
   };
 
   const addAnswer = (answer: Answer) => {
-    console.log('Adding answer to context:', answer)
+    const questionData = quizData.questions.find(q => q.id === answer.questionId);
+    
+    const answerWithQuestionData = {
+      ...answer,
+      questionData
+    };
+
+    console.log('Adding answer to context:', answerWithQuestionData);
     setAnswers((prevAnswers) => {
-      const newAnswers = [...prevAnswers, answer]
-      console.log('Updated answers:', newAnswers)
-      sessionStorage.setItem('interviewAnswers', JSON.stringify(newAnswers))
-      return newAnswers
-    })
+      const newAnswers = [...prevAnswers, answerWithQuestionData];
+      console.log('Updated answers:', newAnswers);
+      sessionStorage.setItem('interviewAnswers', JSON.stringify(newAnswers));
+      return newAnswers;
+    });
+
+    if (interviewId) {
+      supabase.from('answers').insert({
+        interview_id: interviewId,
+        question_id: answer.questionId,
+        audio_url: answer.audioUrl,
+        transcription: answer.transcription,
+        question_data: questionData
+      }).then(({ error }) => {
+        if (error) console.error('Error saving answer:', error);
+      });
+    }
   };
 
   const clearAnswers = () => {
