@@ -19,9 +19,15 @@ export function AudioRecorder({ questionId }: { questionId: number }) {
 
   useEffect(() => {
     if (!isRecording && audioURL && activeQuestionId !== null) {
+      addAnswer({
+        questionId: activeQuestionId,
+        audioUrl: audioURL,
+        transcription: null,
+        questionData: null
+      })
       setActiveQuestionId(null)
     }
-  }, [isRecording, audioURL, activeQuestionId])
+  }, [isRecording, audioURL, activeQuestionId, addAnswer])
 
   return (
     <div className="mt-4">
