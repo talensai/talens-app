@@ -4,7 +4,7 @@ import { useAnswers } from "@/contexts/AnswersContext"
 import { useState, useEffect } from 'react'
 
 export function AudioRecorder({ questionId }: { questionId: number }) {
-  const { isRecording, audioURL, startRecording, stopRecording } = useAudioRecorder(questionId)
+  const { isRecording, audioURL, isUploading, startRecording, stopRecording } = useAudioRecorder(questionId)
   const { addAnswer } = useAnswers()
   const [activeQuestionId, setActiveQuestionId] = useState<number | null>(null)
 
@@ -34,9 +34,18 @@ export function AudioRecorder({ questionId }: { questionId: number }) {
       <Button
         onClick={isRecording ? handleStopRecording : handleStartRecording}
         className={isRecording ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}
+        disabled={isUploading}
       >
         {isRecording ? "Stop Recording" : "Start Recording"}
       </Button>
+      {isUploading && (
+        <div className="text-sm text-gray-600">
+          <span className="animate-pulse">Uploading audio...</span>
+        </div>
+      )}
+      {audioURL && !isUploading && (
+        <audio src={audioURL} controls />
+      )}
     </div>
   )
 }
