@@ -32,7 +32,7 @@ export function Timer({ initialTime, timerKey }: TimerProps) {
 
   return (
     <div className="flex items-center">
-      <div className="font-mono text-xl" aria-live="polite" aria-label="Timer">
+      <div className="tabular-nums text-sm" aria-live="polite" aria-label="Timer">
         {formatTime(time)}
       </div>
     </div>

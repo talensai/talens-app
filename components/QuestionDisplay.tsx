@@ -2,34 +2,34 @@ interface QuestionDisplayProps {
   questionNumber: number
   questionTitle: string
   questionText: string
-  instructions: string
+  instructions: string[]
 }
 
 export function QuestionDisplay({ questionTitle, questionText, instructions }: QuestionDisplayProps) {
   return (
-    <div className="w-full">
-      <div className="bg-[#f5f5f5] rounded-3xl p-8 space-y-8">
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-[#1c3c1c]">
+    <div className="w-full mb-10  mt-5">
+      <div className=" px-6 ">
+        <div className="mb-6">
+          <h2 className="text-xl md:text-2xl tracking-tight font-semibold leading-tight md:leading-tight]">
             {questionTitle}
           </h2>
-          <p className="text-lg text-[#1c3c1c] leading-relaxed">
+          <p className="text-xl md:text-2xl tracking-tight opacity-50 leading-tight md:leading-tight">
             {questionText}
           </p>
         </div>
 
         {instructions && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="h-px w-4 bg-[#1c3c1c]/30" />
-              <h3 className="text-[#1c3c1c]/70 text-sm font-medium uppercase tracking-wide">
-                Instructions
-              </h3>
-              <div className="h-px flex-1 bg-[#1c3c1c]/30" />
+          <div className="space-y-4 border-t pt-5 border-foreground/15">
+            <h3 className="text-xs font-semibold uppercase tracking-wide -mb-2">Interview Instructions</h3>
+            <div className="space-y-1">
+              {Array.isArray(instructions) ? (
+                instructions.map((instruction, index) => (
+                  <p key={index}>{instruction}</p>
+                ))
+              ) : (
+                <p>{instructions}</p>
+              )}
             </div>
-            <p className="text-[#1c3c1c]/80 leading-relaxed pl-1">
-              {instructions}
-            </p>
           </div>
         )}
       </div>
