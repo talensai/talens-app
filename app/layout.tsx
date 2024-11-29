@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AnswersProvider } from "@/contexts/AnswersContext";
+import Symbol  from '@/components/brand/symbol' 
+import Logotype  from '@/components/brand/logotype'
+import Logo  from '@/components/brand/logo'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,9 +32,35 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AnswersProvider>
+        <div className="relative flex flex-col items-center justify-center min-h-screen">
+          <div className="fixed top-0 left-0 w-full min-h-screen px-4 md:px-6 lg:px-8 bg-background">
+            <div className="max-w-[100rem] pt-4 md:pt-6 lg:pt-8 pb-11 mx-auto flex flex-col min-h-screen">
+              <div className="flex flex-col md:flex-row justify-between flex-grow">
+                <div className="flex flex-col justify-between flex-grow">
+                  
+                  <div className="md:hidden flex items-center justify-center flex-grow">
+                    <div className="w-full max-w-md">
+                      <Logo />
+                    </div>
+                  </div>
+                  <div className="hidden md:block w-full max-w-2xl mt-auto">
+                    <Logotype />
+                  </div>
+                </div>
+                <div className="hidden md:block w-16 h-16 flex-shrink-0 md:ml-6 self-start">
+                  <Symbol />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-full">
+          <AnswersProvider>
           {children}
         </AnswersProvider>
+
+          </div>
+        </div>
+       
       </body>
     </html>
   );
