@@ -48,12 +48,12 @@ export default function StartingScreen() {
         
         <Card className="max-w-xl w-full p-1.5 space-y-10">
           <div className="flex flex-col  mx-6 mt-5">
-          <h2 className="text-xl md:text-2xl tracking-tight font-semibold leading-tight ">
-            Welcome to Your Interview
-          </h2>
-          <p className="text-xl md:text-2xl tracking-tight opacity-50 leading-tight">
-            To get started, please enter your name <br className='hidden md:block'/> and access code to continue
-          </p>
+            <h2 className="text-xl md:text-2xl tracking-tight font-semibold leading-tight md:leading-tight">
+              Welcome to Your Interview
+            </h2>
+            <p className="text-xl md:text-2xl tracking-tight opacity-50 leading-tight md:leading-tight">
+              To get started, please enter your name <br className='hidden md:block'/> and access code to continue
+            </p>
           </div>
           
           <form onSubmit={handleSubmitAuth} className="space-y-4">
@@ -109,19 +109,20 @@ export default function StartingScreen() {
     <div className=" flex flex-col items-center p-5">
      
       
-      <Card className="max-w-2xl w-full space-y-8 p-6">
-        <div>
-          <h2 className="text-2xl font-semibold text-[#1c3c1c] mb-4">
+      <Card className="max-w-xl w-full p-1.5 space-y-10">
+        
+        <div className="flex flex-col  mx-6 mt-5">
+            <h2 className="text-xl md:text-2xl tracking-tight font-semibold leading-tight md:leading-tight ">
             Welcome, {name}!
-          </h2>
-          <p className="text-[#1c3c1c] mb-6">
-            Please review the following instructions before beginning your interview.
-          </p>
-        </div>
+            </h2>
+            <p className="text-xl md:text-2xl tracking-tight opacity-50 leading-tight md:leading-tight">
+            Please review the following instructions <br className='hidden md:block'/> before beginning your interview
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-[#1c3c1c]">Interview Instructions</h3>
-          <ul className="space-y-3 text-[#1c3c1c]">
+        <div className="space-y-4 mx-6 border-t pt-5 border-foreground/15">
+          <h3 className="text-xs font-semibold uppercase tracking-wide -mb-2">Interview Instructions</h3>
+          <ul className="space-y-1">
             <li>• Read questions aloud before answering</li>
             <li>• Speak your thoughts aloud</li>
             <li>• No external help or AI tools allowed</li>
@@ -130,7 +131,8 @@ export default function StartingScreen() {
 
         <Button 
           onClick={handleStartInterview}
-          className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c]"
+          className="w-full"
+          size="lg"
         >
           Start Interview
         </Button>
