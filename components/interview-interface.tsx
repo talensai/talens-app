@@ -83,7 +83,7 @@ export function InterviewInterfaceComponent() {
     stopRecording()
   }
 
-  if (questions.length === 0) return <div>Loading...</div>
+  if (questions.length === 0) return <div className="w-full flex flex-col items-center justify-center">Loading...</div>
 
   const currentQuestion = questions[currentQuestionIndex]
 
