@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
 import { useAnswers } from "@/contexts/AnswersContext"
 import { QuestionReady } from "@/components/QuestionReady"
+import { Card } from "@/components/ui/card"
 
 interface QuizQuestion {
   id: number
   title: string
   questionText: string
-  instructions: string
+  instructions: string[]
   timeLimit: number
 }
 
@@ -82,13 +83,15 @@ export function InterviewInterfaceComponent() {
     stopRecording()
   }
 
-  if (questions.length === 0) return <div>Loading...</div>
+  if (questions.length === 0) return <div className="w-full flex flex-col items-center justify-center">Loading...</div>
 
   const currentQuestion = questions[currentQuestionIndex]
 
   return (
-    <div className="min-h-screen bg-white p-5 flex flex-col">
-      <header className="flex justify-between items-center mb-5">
+    <div className="min-h-screen p-5 flex flex-col">
+      
+      {/* 
+        <header className="flex justify-between items-center mb-5">
         <div className="text-lg font-medium text-[#1c3c1c]" aria-label="Progress">
           Question {currentQuestionIndex + 1} of {questions.length}
         </div>
@@ -97,26 +100,75 @@ export function InterviewInterfaceComponent() {
           timerKey={currentQuestion.id}
         />
       </header>
+      
+      */}
 
       <main className="flex-grow flex flex-col justify-center items-center space-y-5">
+        <Card className="max-w-xl w-full p-1.5 ">
+            
+
         {questionState === 'ready' ? (
-          <QuestionReady 
-            onReady={handleReady}
-            questionNumber={currentQuestionIndex + 1}
-            totalQuestions={questions.length}
-          />
-        ) : (
-          <div className="w-full max-w-3xl">
-            <div className="flex justify-center mb-6">
-              <div className="flex items-center gap-3 py-2 px-4">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-sm font-medium tracking-wide uppercase text-[#1c3c1c]">
-                  Recording in Progress
+          <div>
+            <div className="flex  w-full justify-between py-5 px-6 ">
+              <div className="flex items-center gap-1 w-1/3">
+               
+                <span className="text-sm ">
+                  Question
                 </span>
               </div>
-            </div>
 
-            <div className="space-y-8">
+              <div className="tabular-nums text-sm text-center w-1/3"> {currentQuestionIndex + 1} of {questions.length}
+              </div>
+              <div className="flex justify-end w-1/3">
+                <Timer 
+                  initialTime={currentQuestion.timeLimit} 
+                  timerKey={currentQuestion.id}
+                />
+              </div>
+            </div>
+            <div className="relative  bg-foreground/15 rounded-full h-1 mx-6">
+              <div 
+                className="absolute bg-primary rounded-full h-1"
+                style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+              ></div>
+            </div>
+            <QuestionReady 
+              onReady={handleReady}
+              questionNumber={currentQuestionIndex + 1}
+              totalQuestions={questions.length}
+            />
+          </div>
+        ) : (
+          
+            
+
+            <div>
+              <div className="flex  w-full justify-between py-5 px-6 ">
+              <div className="flex items-center gap-1 w-1/3">
+               <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+                <span className="text-xs font-medium tracking-wide uppercase ">
+                  Recording 
+                </span>
+              </div>
+
+              <div className="tabular-nums text-sm text-center w-1/3"> {currentQuestionIndex + 1} of {questions.length}
+              </div>
+              <div className="flex justify-end w-1/3">
+                <Timer 
+                  initialTime={currentQuestion.timeLimit} 
+                  timerKey={currentQuestion.id}
+                />
+              </div>
+            </div>
+            <div className="relative  bg-foreground/15 rounded-full h-1 mx-6">
+              <div 
+                className="absolute bg-primary rounded-full h-1"
+                style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+              ></div>
+            </div>
               <QuestionDisplay 
                 questionNumber={currentQuestionIndex + 1}
                 questionTitle={currentQuestion.title}
@@ -126,7 +178,7 @@ export function InterviewInterfaceComponent() {
 
               <Button 
                 onClick={handleSubmit}
-                className="w-full bg-[#9de76ed9] hover:bg-[#8fd362] text-[#1c3c1c] font-semibold rounded-2xl transition-colors"
+                className="w-full "
                 size="lg"
                 disabled={isLoading}
               >
@@ -140,8 +192,9 @@ export function InterviewInterfaceComponent() {
                 )}
               </Button>
             </div>
-          </div>
+          
         )}
+        </Card>
       </main>
     </div>
   )
