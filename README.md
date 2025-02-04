@@ -1,8 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Talens Interview Application
+
+A Next.js-based interview platform that facilitates structured interviews with audio recording, transcription, and summary generation capabilities.
+
+## Features
+
+- User authentication with access code protection
+- Guided interview process
+- Audio recording and transcription
+- Response storage using Supabase
+- Interview summary generation with OpenAI integration
+- Modern UI with Tailwind CSS
+
+## Tech Stack
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Supabase
+- OpenAI API
+- Jest for testing
+
+## Prerequisites
+
+Before running this application, make sure you have:
+- Node.js installed
+- A Supabase account and project
+- An OpenAI API key
+- Environment variables properly configured
+
+## Environment Setup
+
+Copy the `.env.example` file to create your own `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Then replace the placeholder values in `.env` with your actual credentials:
+```env
+OPENAI_API_KEY=your_openai_api_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+Note: Never commit your actual API keys and secrets to version control. The values above are just placeholders.
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -16,7 +69,14 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
+
+- `/app` - Main application routes and pages
+- `/components` - Reusable UI components
+- `/contexts` - React context providers
+- `/hooks` - Custom React hooks
+- `/lib` - Utility functions and configurations
+- `/public` - Static assets
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
