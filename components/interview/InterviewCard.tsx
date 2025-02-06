@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { QuestionDisplay } from "@/components/QuestionDisplay";
+import { QuestionDisplay } from "@/components/interview/QuestionDisplay";
 import { Button } from "@/components/ui/button";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useAnswers } from "@/contexts/AnswersContext";
-import { QuestionReady } from "@/components/QuestionReady";
+import { QuestionReady } from "@/components/interview/QuestionReady";
 import { Card } from "@/components/ui/card";
 import { QuestionState, QuizQuestion } from "@/lib/types";
-import QuestionsHeader from "@/components/QuestionHeader";
+import QuestionsHeader from "@/components/interview/QuestionHeader";
 
 type InterviewCardProps = {
   questions: QuizQuestion[];

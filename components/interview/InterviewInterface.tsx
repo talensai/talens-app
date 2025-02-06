@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import InterviewCard from "@/components/InterviewCard";
+import InterviewCard from "@/components/interview/InterviewCard";
 import { QuizQuestion } from "@/lib/types";
 
 export function InterviewInterfaceComponent() {
