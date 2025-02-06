@@ -1,8 +1,14 @@
-"use client"
+"use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
-import quizData from '@/public/quizData.json';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { supabase } from "@/lib/supabase";
+import quizData from "@/public/quizData.json";
 
 interface Answer {
   questionId: number;
@@ -29,10 +35,10 @@ export function AnswersProvider({ children }: { children: ReactNode }) {
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedAnswers = sessionStorage.getItem('interviewAnswers');
-    const storedInterviewId = sessionStorage.getItem('interviewId');
-    const storedUserName = sessionStorage.getItem('userName');
-    
+    const storedAnswers = sessionStorage.getItem("interviewAnswers");
+    const storedInterviewId = sessionStorage.getItem("interviewId");
+    const storedUserName = sessionStorage.getItem("userName");
+
     if (storedAnswers) setAnswers(JSON.parse(storedAnswers));
     if (storedInterviewId) setInterviewId(storedInterviewId);
     if (storedUserName) setUserName(storedUserName);
@@ -40,24 +46,22 @@ export function AnswersProvider({ children }: { children: ReactNode }) {
 
   const handleSetUserName = (name: string) => {
     setUserName(name);
-    sessionStorage.setItem('userName', name);
+    sessionStorage.setItem("userName", name);
   };
 
   const initializeInterview = async () => {
     const newInterviewId = crypto.randomUUID();
     setInterviewId(newInterviewId);
-    sessionStorage.setItem('interviewId', newInterviewId);
-    
-    const { error } = await supabase
-      .from('interviews')
-      .insert({
-        id: newInterviewId,
-        user_name: userName,
-        created_at: new Date().toISOString()
-      });
+    sessionStorage.setItem("interviewId", newInterviewId);
+
+    const { error } = await supabase.from("interviews").insert({
+      id: newInterviewId,
+      user_name: userName,
+      created_at: new Date().toISOString(),
+    });
 
     if (error) {
-      console.error('Error creating interview:', error);
+      console.error("Error creating interview:", error);
       throw error;
     }
 
@@ -65,51 +69,58 @@ export function AnswersProvider({ children }: { children: ReactNode }) {
   };
 
   const addAnswer = (answer: Answer) => {
-    const questionData = quizData.questions.find(q => q.id === answer.questionId);
-    
+    const questionData = quizData.questions.find(
+      (q) => q.id === answer.questionId,
+    );
+
     const answerWithQuestionData = {
       ...answer,
-      questionData
+      questionData,
     };
 
-    console.log('Adding answer to context:', answerWithQuestionData);
+    console.log("Adding answer to context:", answerWithQuestionData);
     setAnswers((prevAnswers) => {
       const newAnswers = [...prevAnswers, answerWithQuestionData];
-      console.log('Updated answers:', newAnswers);
-      sessionStorage.setItem('interviewAnswers', JSON.stringify(newAnswers));
+      console.log("Updated answers:", newAnswers);
+      sessionStorage.setItem("interviewAnswers", JSON.stringify(newAnswers));
       return newAnswers;
     });
 
     if (interviewId) {
-      supabase.from('answers').insert({
-        interview_id: interviewId,
-        question_id: answer.questionId,
-        audio_url: answer.audioUrl,
-        transcription: answer.transcription,
-        question_data: questionData
-      }).then(({ error }) => {
-        if (error) console.error('Error saving answer:', error);
-      });
+      supabase
+        .from("answers")
+        .insert({
+          interview_id: interviewId,
+          question_id: answer.questionId,
+          audio_url: answer.audioUrl,
+          transcription: answer.transcription,
+          question_data: questionData,
+        })
+        .then(({ error }) => {
+          if (error) console.error("Error saving answer:", error);
+        });
     }
   };
 
   const clearAnswers = () => {
     setAnswers([]);
     setInterviewId(null);
-    sessionStorage.removeItem('interviewAnswers');
-    sessionStorage.removeItem('interviewId');
+    sessionStorage.removeItem("interviewAnswers");
+    sessionStorage.removeItem("interviewId");
   };
 
   return (
-    <AnswersContext.Provider value={{ 
-      answers, 
-      interviewId,
-      userName, 
-      addAnswer, 
-      clearAnswers, 
-      initializeInterview,
-      setUserName: handleSetUserName
-    }}>
+    <AnswersContext.Provider
+      value={{
+        answers,
+        interviewId,
+        userName,
+        addAnswer,
+        clearAnswers,
+        initializeInterview,
+        setUserName: handleSetUserName,
+      }}
+    >
       {children}
     </AnswersContext.Provider>
   );
@@ -118,7 +129,7 @@ export function AnswersProvider({ children }: { children: ReactNode }) {
 export function useAnswers() {
   const context = useContext(AnswersContext);
   if (context === undefined) {
-    throw new Error('useAnswers must be used within an AnswersProvider');
+    throw new Error("useAnswers must be used within an AnswersProvider");
   }
   return context;
 }

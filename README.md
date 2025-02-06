@@ -23,6 +23,7 @@ A Next.js-based interview platform that facilitates structured interviews with a
 ## Prerequisites
 
 Before running this application, make sure you have:
+
 - Node.js installed
 - A Supabase account and project
 - An OpenAI API key
@@ -37,6 +38,7 @@ cp .env.example .env
 ```
 
 Then replace the placeholder values in `.env` with your actual credentials:
+
 ```env
 OPENAI_API_KEY=your_openai_api_key
 SUPABASE_URL=your_supabase_url

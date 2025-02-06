@@ -28,7 +28,9 @@
       "id": 3,
       "title": "Scenario",
       "questionText": "A small coastal town experiences a sudden increase in jellyfish sightings near its popular beaches. Local marine biologists report no significant changes in water temperature or acidity. The town recently upgraded its sewage treatment plant and banned certain sunscreens to protect coral reefs. Tourism has increased by 10% compared to last year, with more visitors from neighboring countries. A new fishing regulation limits catches of certain species. Curiously, sales of ice cream and bottled water have spiked, while sales of inflatable pool toys have decreased. The town's annual sandcastle competition was canceled due to lack of funding.",
-      "instructions": ["What do you think is the most likely reason for the increase in jellyfish sightings? Think out loud and explain your reasoning"],
+      "instructions": [
+        "What do you think is the most likely reason for the increase in jellyfish sightings? Think out loud and explain your reasoning"
+      ],
       "timeLimit": 300
     },
     {
@@ -42,7 +44,9 @@
       "id": 5,
       "title": "Scenario",
       "questionText": "You're a software developer with 4 hours left in your workday. You have these tasks: 1 - Fix a critical bug in the production system - 2 Complete code review for a colleague's pull request - 3 Finish writing unit tests for a new feature 4. Attend a 30-minute team standup (starts in 1 hour)",
-      "instructions": ["Estimate the time for each task and create a prioritized schedule."],
+      "instructions": [
+        "Estimate the time for each task and create a prioritized schedule."
+      ],
       "timeLimit": 300
     },
     {
