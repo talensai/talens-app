@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Timer } from "@/components/Timer";
 import { QuestionDisplay } from "@/components/QuestionDisplay";
 import { Button } from "@/components/ui/button";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
@@ -7,6 +6,7 @@ import { useAnswers } from "@/contexts/AnswersContext";
 import { QuestionReady } from "@/components/QuestionReady";
 import { Card } from "@/components/ui/card";
 import { QuestionState, QuizQuestion } from "@/lib/types";
+import QuestionsHeader from "@/components/QuestionHeader";
 
 type InterviewCardProps = {
   questions: QuizQuestion[];
@@ -70,81 +70,29 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
     stopRecording();
   };
 
-  if (questions.length === 0)
+  if (questions.length === 0) {
     return (
       <div className="w-full flex flex-col items-center justify-center">
         Loading...
       </div>
     );
+  }
 
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
     <Card className="max-w-xl w-full p-1.5 ">
+      <QuestionsHeader
+        questionIndex={currentQuestionIndex}
+        questionsLength={questions.length}
+        questionTimeLimit={currentQuestion.timeLimit}
+        questionId={currentQuestion.id}
+        isRecording={questionState === "recording"}
+      />
       {questionState === "ready" ? (
-        <div>
-          <div className="flex  w-full justify-between py-5 px-6 ">
-            <div className="flex items-center gap-1 w-1/3">
-              <span className="text-sm ">Question</span>
-            </div>
-
-            <div className="tabular-nums text-sm text-center w-1/3">
-              {" "}
-              {currentQuestionIndex + 1} of {questions.length}
-            </div>
-            <div className="flex justify-end w-1/3">
-              <Timer
-                initialTime={currentQuestion.timeLimit}
-                timerKey={currentQuestion.id}
-              />
-            </div>
-          </div>
-          <div className="relative  bg-foreground/15 rounded-full h-1 mx-6">
-            <div
-              className="absolute bg-primary rounded-full h-1"
-              style={{
-                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
-              }}
-            ></div>
-          </div>
-          <QuestionReady
-            onReady={handleReady}
-            questionNumber={currentQuestionIndex + 1}
-            totalQuestions={questions.length}
-          />
-        </div>
+        <QuestionReady onReady={handleReady} />
       ) : (
-        <div>
-          <div className="flex  w-full justify-between py-5 px-6 ">
-            <div className="flex items-center gap-1 w-1/3">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-              </span>
-              <span className="text-xs font-medium tracking-wide uppercase ">
-                Recording
-              </span>
-            </div>
-
-            <div className="tabular-nums text-sm text-center w-1/3">
-              {" "}
-              {currentQuestionIndex + 1} of {questions.length}
-            </div>
-            <div className="flex justify-end w-1/3">
-              <Timer
-                initialTime={currentQuestion.timeLimit}
-                timerKey={currentQuestion.id}
-              />
-            </div>
-          </div>
-          <div className="relative  bg-foreground/15 rounded-full h-1 mx-6">
-            <div
-              className="absolute bg-primary rounded-full h-1"
-              style={{
-                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
-              }}
-            ></div>
-          </div>
+        <>
           <QuestionDisplay
             questionNumber={currentQuestionIndex + 1}
             questionTitle={currentQuestion.title}
@@ -167,7 +115,7 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
               "Submit Answer"
             )}
           </Button>
-        </div>
+        </>
       )}
     </Card>
   );

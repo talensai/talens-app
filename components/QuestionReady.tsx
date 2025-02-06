@@ -3,8 +3,6 @@ import { Mic, Speech, CheckSquare } from "lucide-react";
 
 interface QuestionReadyProps {
   onReady: () => void;
-  questionNumber: number;
-  totalQuestions: number;
 }
 
 export function QuestionReady({ onReady }: QuestionReadyProps) {
