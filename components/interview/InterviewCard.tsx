@@ -48,14 +48,6 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
     ? "Answer upload failed: Retry"
     : "Submit Answer";
 
-  if (questions.length === 0) {
-    return (
-      <div className="w-full flex flex-col items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
-
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
