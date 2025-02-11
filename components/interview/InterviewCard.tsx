@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { QuestionDisplay } from "@/components/interview/QuestionDisplay";
 import { Button } from "@/components/ui/button";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
-import { useAnswers } from "@/contexts/AnswersContext";
 import { QuestionReady } from "@/components/interview/QuestionReady";
 import { Card } from "@/components/ui/card";
 import { QuestionState, QuizQuestion } from "@/lib/types";
@@ -15,12 +14,6 @@ type InterviewCardProps = {
 export default function InterviewCard({ questions }: InterviewCardProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionState, setQuestionState] = useState<QuestionState>("ready");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { startRecording, stopRecording, audioURL } = useAudioRecorder(
-    questions[currentQuestionIndex]?.id
-  );
-  const { addAnswer } = useAnswers();
 
   const handleNextQuestion = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
@@ -33,33 +26,11 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
     }
   }, [currentQuestionIndex, questions.length]);
 
-  // New useEffect to handle submission
-  useEffect(() => {
-    console.log("Submission effect triggered:", {
-      isSubmitting,
-      audioURL,
-      currentQuestionIndex,
-      questionId: questions[currentQuestionIndex]?.id,
-    });
-
-    if (isSubmitting && audioURL) {
-      console.log("Adding answer to context:", {
-        questionId: questions[currentQuestionIndex].id,
-        audioUrl: audioURL,
-      });
-
-      addAnswer({
-        questionId: questions[currentQuestionIndex].id,
-        audioUrl: audioURL,
-        transcription: null,
-      });
-
-      handleNextQuestion();
-
-      setIsSubmitting(false);
-      setIsLoading(false);
-    }
-  }, [isSubmitting, handleNextQuestion, audioURL, currentQuestionIndex, questions, addAnswer]);
+  const { startRecording, stopRecording, isLoading } = useAudioRecorder(
+    questions[currentQuestionIndex]?.id,
+    currentQuestionIndex,
+    handleNextQuestion
+  );
 
   const handleReady = async () => {
     console.log("Question ready, starting recording");
@@ -69,8 +40,6 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
 
   const handleSubmit = () => {
     console.log("Submitting answer");
-    setIsLoading(true);
-    setIsSubmitting(true);
     stopRecording();
   };
 
