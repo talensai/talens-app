@@ -1,3 +1,4 @@
+import TimerUI from "@/components/interview/TimerUI";
 import { useState, useEffect, useRef } from "react";
 
 interface TimerProps {
@@ -38,21 +39,5 @@ export function Timer({ initialTime, timerKey, handleSubmit }: TimerProps) {
     return () => clearInterval(interval);
   }, [initialTime, timerKey]); // Add timerKey to dependencies
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
-
-  return (
-    <div className="flex items-center">
-      <div
-        className="tabular-nums text-sm"
-        aria-live="polite"
-        aria-label="Timer"
-      >
-        {formatTime(time)}
-      </div>
-    </div>
-  );
+  return <TimerUI time={time} />;
 }
