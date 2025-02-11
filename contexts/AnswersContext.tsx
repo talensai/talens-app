@@ -9,12 +9,13 @@ import React, {
 } from "react";
 import { supabase } from "@/lib/supabase";
 import quizData from "@/public/quizData.json";
+import { QuizQuestion } from "@/lib/types";
 
 interface Answer {
   questionId: number;
   audioUrl: string;
   transcription: string | null;
-  questionData?: any;
+  questionData?: QuizQuestion;
 }
 
 interface AnswersContextType {
