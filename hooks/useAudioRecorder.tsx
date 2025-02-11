@@ -7,20 +7,24 @@ export function useAudioRecorder(
   questionIndex: number,
   handleNextQuestion: () => void
 ) {
+  const { interviewId, addAnswer } = useAnswers();
+
   const [isRecording, setIsRecording] = useState(false);
+  const [isUploadError, setIsUploadError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const { interviewId, addAnswer } = useAnswers();
-  const [isLoading, setIsLoading] = useState(false);
 
   console.log("useAudioRecorder hook called");
 
-  const onStop = useCallback(async () => {
+  const onStopRecording = useCallback(async () => {
     const audioBlob = new Blob(chunksRef.current, { type: "audio/mp3" });
     // const audioUrl = URL.createObjectURL(audioBlob);
     try {
       const audioUrl = await uploadAudio(audioBlob, questionId, interviewId!);
       console.log("Audio uploaded successfully:", audioUrl);
+      setIsUploadError(false);
 
       console.log("Submission triggered:", {
         questionIndex,
@@ -41,6 +45,7 @@ export function useAudioRecorder(
       handleNextQuestion();
     } catch (error) {
       console.error("Failed to upload audio:", error);
+      setIsUploadError(true);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +66,7 @@ export function useAudioRecorder(
       };
       mediaRecorderRef.current.onstop = async () => {
         console.log("Recording stopped, processing audio...");
-        onStop();
+        await onStopRecording();
         stream.getTracks().forEach((track) => track.stop());
       };
       mediaRecorderRef.current.start();
@@ -70,30 +75,36 @@ export function useAudioRecorder(
     } catch (error) {
       console.error("Error in startRecording:", error);
     }
-  }, [questionId, onStop]);
+  }, [questionId, onStopRecording]);
 
   const stopRecording = useCallback(() => {
     console.log("Stopping recording");
+    setIsLoading(true);
+
+    // Active recording
     if (mediaRecorderRef.current && isRecording) {
-      setIsLoading(true);
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       console.log("Recording stopped successfully");
+    }
+    // Retry on upload error
+    else if (isUploadError) {
+      onStopRecording();
     } else {
       console.log("No active recording to stop");
+      setIsLoading(false);
     }
-  }, [isRecording]);
+  }, [isRecording, isUploadError, onStopRecording]);
 
-  // Add this useEffect to log state changes
+  // This useEffect logs state changes
   useEffect(() => {
     console.log("Audio state updated:", { isRecording });
   }, [isRecording]);
 
   return {
-    isRecording,
     isLoading,
-    transcription: null,
     startRecording,
     stopRecording,
+    isUploadError,
   };
 }

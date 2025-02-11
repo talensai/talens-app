@@ -26,11 +26,12 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
     }
   }, [currentQuestionIndex, questions.length]);
 
-  const { startRecording, stopRecording, isLoading } = useAudioRecorder(
-    questions[currentQuestionIndex]?.id,
-    currentQuestionIndex,
-    handleNextQuestion
-  );
+  const { startRecording, stopRecording, isLoading, isUploadError } =
+    useAudioRecorder(
+      questions[currentQuestionIndex]?.id,
+      currentQuestionIndex,
+      handleNextQuestion
+    );
 
   const handleReady = async () => {
     console.log("Question ready, starting recording");
@@ -42,6 +43,10 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
     console.log("Submitting answer");
     stopRecording();
   };
+
+  const submitButtonText = isUploadError
+    ? "Answer upload failed: Retry"
+    : "Submit Answer";
 
   if (questions.length === 0) {
     return (
@@ -80,7 +85,7 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
                 <span>Processing...</span>
               </div>
             ) : (
-              "Submit Answer"
+              submitButtonText
             )}
           </Button>
         </>
