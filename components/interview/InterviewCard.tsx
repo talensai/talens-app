@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { QuestionDisplay } from "@/components/interview/QuestionDisplay";
 import { Button } from "@/components/ui/button";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
@@ -22,6 +22,17 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
   );
   const { addAnswer } = useAnswers();
 
+  const handleNextQuestion = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      console.log("Moving to next question");
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setQuestionState("ready");
+    } else {
+      console.log("Interview complete, redirecting to summary");
+      window.location.href = "/summary";
+    }
+  }, [currentQuestionIndex, questions.length]);
+
   // New useEffect to handle submission
   useEffect(() => {
     console.log("Submission effect triggered:", {
@@ -43,19 +54,12 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
         transcription: null,
       });
 
-      if (currentQuestionIndex < questions.length - 1) {
-        console.log("Moving to next question");
-        setCurrentQuestionIndex((prev) => prev + 1);
-        setQuestionState("ready");
-      } else {
-        console.log("Interview complete, redirecting to summary");
-        window.location.href = "/summary";
-      }
+      handleNextQuestion();
 
       setIsSubmitting(false);
       setIsLoading(false);
     }
-  }, [isSubmitting, audioURL, currentQuestionIndex, questions, addAnswer]);
+  }, [isSubmitting, handleNextQuestion, audioURL, currentQuestionIndex, questions, addAnswer]);
 
   const handleReady = async () => {
     console.log("Question ready, starting recording");
