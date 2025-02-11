@@ -1,21 +1,60 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useAnswers } from "@/contexts/AnswersContext";
+import { uploadAudio } from "@/lib/api-utils";
 
-export function useAudioRecorder(questionId: number) {
+export function useAudioRecorder(
+  questionId: number,
+  questionIndex: number,
+  handleNextQuestion: () => void
+) {
+  const { interviewId, addAnswer } = useAnswers();
+
   const [isRecording, setIsRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState<string | null>(null);
+  const [isUploadError, setIsUploadError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const { interviewId } = useAnswers();
-  const [isUploading, setIsUploading] = useState(false);
 
   console.log("useAudioRecorder hook called");
+
+  const onStopRecording = useCallback(async () => {
+    const audioBlob = new Blob(chunksRef.current, { type: "audio/mp3" });
+    // const audioUrl = URL.createObjectURL(audioBlob);
+    try {
+      const audioUrl = await uploadAudio(audioBlob, questionId, interviewId!);
+      console.log("Audio uploaded successfully:", audioUrl);
+      setIsUploadError(false);
+
+      console.log("Submission triggered:", {
+        questionIndex,
+        questionId,
+      });
+
+      console.log("Adding answer to context:", {
+        questionId,
+        audioUrl,
+      });
+
+      addAnswer({
+        questionId,
+        audioUrl,
+        transcription: null,
+      });
+
+      handleNextQuestion();
+    } catch (error) {
+      console.error("Failed to upload audio:", error);
+      setIsUploadError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [questionId, interviewId, handleNextQuestion, addAnswer, questionIndex]);
 
   const startRecording = useCallback(async () => {
     console.log("Starting recording for question:", questionId);
     try {
       // Clear previous recording data
-      setAudioURL(null);
       chunksRef.current = [];
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -27,20 +66,7 @@ export function useAudioRecorder(questionId: number) {
       };
       mediaRecorderRef.current.onstop = async () => {
         console.log("Recording stopped, processing audio...");
-        const audioBlob = new Blob(chunksRef.current, { type: "audio/mp3" });
-        const audioUrl = URL.createObjectURL(audioBlob);
-
-        setIsUploading(true);
-        try {
-          const uploadedUrl = await uploadAudio(audioBlob);
-          console.log("Audio uploaded successfully:", uploadedUrl);
-          setAudioURL(uploadedUrl);
-        } catch (error) {
-          console.error("Failed to upload audio:", error);
-        } finally {
-          setIsUploading(false);
-        }
-
+        await onStopRecording();
         stream.getTracks().forEach((track) => track.stop());
       };
       mediaRecorderRef.current.start();
@@ -49,75 +75,36 @@ export function useAudioRecorder(questionId: number) {
     } catch (error) {
       console.error("Error in startRecording:", error);
     }
-  }, [questionId, interviewId]);
+  }, [questionId, onStopRecording]);
 
   const stopRecording = useCallback(() => {
     console.log("Stopping recording");
+    setIsLoading(true);
+
+    // Active recording
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       console.log("Recording stopped successfully");
+    }
+    // Retry on upload error
+    else if (isUploadError) {
+      onStopRecording();
     } else {
       console.log("No active recording to stop");
+      setIsLoading(false);
     }
+  }, [isRecording, isUploadError, onStopRecording]);
+
+  // This useEffect logs state changes
+  useEffect(() => {
+    console.log("Audio state updated:", { isRecording });
   }, [isRecording]);
 
-  const uploadAudio = async (audioBlob: Blob) => {
-    const maxRetries = 3;
-    const baseDelay = 1000; // Start with 1 second delay
-
-    const attemptUpload = async (attempt: number): Promise<string> => {
-      try {
-        console.log(`Upload attempt ${attempt + 1}/${maxRetries}`, {
-          questionId,
-          interviewId,
-          blobSize: audioBlob.size,
-        });
-
-        const formData = new FormData();
-        formData.append("file", audioBlob, "audio.mp3");
-        formData.append("questionId", questionId.toString());
-        formData.append("interviewId", interviewId!);
-
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await response.json();
-        console.log("Upload response:", data);
-
-        if (!response.ok) {
-          throw new Error(`Upload failed: ${data.error || "Unknown error"}`);
-        }
-
-        return data.url;
-      } catch (error) {
-        if (attempt < maxRetries - 1) {
-          const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
-          console.log(`Upload failed, retrying in ${delay}ms...`, error);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          return attemptUpload(attempt + 1);
-        }
-        console.error("All upload attempts failed:", error);
-        throw error;
-      }
-    };
-
-    return attemptUpload(0);
-  };
-
-  // Add this useEffect to log state changes
-  useEffect(() => {
-    console.log("Audio state updated:", { isRecording, audioURL });
-  }, [isRecording, audioURL]);
-
   return {
-    isRecording,
-    audioURL,
-    isUploading,
-    transcription: null,
+    isLoading,
     startRecording,
     stopRecording,
+    isUploadError,
   };
 }

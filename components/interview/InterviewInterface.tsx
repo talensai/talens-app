@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import InterviewCard from "@/components/interview/InterviewCard";
 import { QuizQuestion } from "@/lib/types";
-import InterviewCard from "@/components/InterviewCard";
 
 // Responsibility => Fetch quiz data and render InterviewCard
 export function InterviewInterfaceComponent() {
