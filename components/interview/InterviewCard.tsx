@@ -53,6 +53,7 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
   return (
     <Card className="max-w-xl w-full p-1.5 ">
       <QuestionsHeader
+        handleSubmit={handleSubmit}
         questionIndex={currentQuestionIndex}
         questionsLength={questions.length}
         questionTimeLimit={currentQuestion.timeLimit}
