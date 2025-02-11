@@ -41,6 +41,8 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
 
   const handleSubmit = () => {
     console.log("Submitting answer");
+    // Change UI from recording state to normal state
+    setQuestionState("submitting");
     stopRecording();
   };
 
@@ -53,11 +55,12 @@ export default function InterviewCard({ questions }: InterviewCardProps) {
   return (
     <Card className="max-w-xl w-full p-1.5 ">
       <QuestionsHeader
+        handleSubmit={handleSubmit}
         questionIndex={currentQuestionIndex}
         questionsLength={questions.length}
         questionTimeLimit={currentQuestion.timeLimit}
         questionId={currentQuestion.id}
-        isRecording={questionState === "recording"}
+        questionState={questionState}
       />
       {questionState === "ready" ? (
         <QuestionReady onReady={handleReady} />

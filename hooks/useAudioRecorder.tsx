@@ -90,11 +90,15 @@ export function useAudioRecorder(
     // Retry on upload error
     else if (isUploadError) {
       onStopRecording();
-    } else {
+    }
+    // No active recording (User didn't enter recording state)
+    // Move on to next question
+    else {
       console.log("No active recording to stop");
       setIsLoading(false);
+      handleNextQuestion();
     }
-  }, [isRecording, isUploadError, onStopRecording]);
+  }, [isRecording, isUploadError, onStopRecording, handleNextQuestion]);
 
   // This useEffect logs state changes
   useEffect(() => {
