@@ -1,5 +1,5 @@
 export type StartingStep = "auth" | "instructions";
-export type QuestionState = "ready" | "recording";
+export type QuestionState = "ready" | "recording" | "submitting";
 
 export interface QuizQuestion {
   id: number;

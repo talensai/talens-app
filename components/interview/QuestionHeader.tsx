@@ -1,11 +1,13 @@
 import { Timer } from "@/components/interview/Timer";
+import TimerUI from "@/components/interview/TimerUI";
+import { QuestionState } from "@/lib/types";
 import React from "react";
 
 type QuestionsHeaderProps = {
-  isRecording: boolean;
   questionIndex: number;
   questionsLength: number;
   questionTimeLimit: number;
+  questionState: QuestionState;
   questionId: number;
   handleSubmit: () => void;
 };
@@ -16,9 +18,13 @@ function QuestionsHeader({
   questionsLength,
   questionTimeLimit,
   questionId,
-  isRecording,
   handleSubmit,
+  questionState,
 }: QuestionsHeaderProps) {
+  const isRecording = questionState === "recording";
+
+  // Render timer only when recording or ready
+  const isTimerActive = isRecording || questionState === "ready";
   return (
     <>
       <div className="flex  w-full justify-between py-5 px-6 ">
@@ -38,11 +44,15 @@ function QuestionsHeader({
           {questionIndex + 1} of {questionsLength}
         </div>
         <div className="flex justify-end w-1/3">
-          <Timer
-            initialTime={questionTimeLimit}
-            timerKey={questionId}
-            handleSubmit={handleSubmit}
-          />
+          {isTimerActive ? (
+            <Timer
+              initialTime={questionTimeLimit}
+              timerKey={questionId}
+              handleSubmit={handleSubmit}
+            />
+          ) : (
+            <TimerUI time={0} />
+          )}
         </div>
       </div>
       {/* Progress bar */}
