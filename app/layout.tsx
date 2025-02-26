@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Talens Interview Application</title>
+        <title>Talens Assessment</title>
         <meta name="description" content="An AI-based assessment platform" />
         
         {/* Open Graph / Social Media */}
